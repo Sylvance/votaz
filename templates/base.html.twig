@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Conference Guide{% endblock %}</title>
+    </head>
+    <body>
+        <header>
+            <nav>{# ... links shared by all pages ... #}</nav>
+        </header>
+        {% block body %}{% endblock %}
+        <footer>&copy; {{ 'now'|date('Y') }} Conference Guide</footer>
+    </body>
+</html>
