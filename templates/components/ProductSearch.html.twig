@@ -1,0 +1,10 @@
+<div {{ attributes }}>
+    <input data-model="query" placeholder="Search products...">
+    <ul>
+        {% for product in this.products %}
+            <li>{{ product.name }}</li>
+        {% else %}
+            <li>No products found</li>
+        {% endfor %}
+    </ul>
+</div>

@@ -1,0 +1,10 @@
+<h1>Thanks for your purchase!</h1>
+<p>
+    We've received your payment of
+    <strong>{{ invoice.total }} €</strong>.
+</p>
+<p>
+    <a href="{{ url('invoice_download', {id: invoice.id}) }}">
+        Download your invoice (PDF)
+    </a>
+</p>

@@ -1,0 +1,10 @@
+ai:
+    platform:
+        anthropic:
+            api_key: '%env(ANTHROPIC_API_KEY)%'
+    agent:
+        support:
+            model: 'claude-sonnet-5'
+            prompt: 'You help customers of the Acme online store.'
+            tools:
+                - 'App\Ai\OrderStatusTool'
