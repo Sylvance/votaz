@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin dashboard · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <h1>Electoral commission dashboard</h1>
+
+    <div class="statgrid panel">
+        <div class="stat"><div class="num">{{ counts.voters }}</div><div class="lab">Voters registered</div></div>
+        <div class="stat"><div class="num">{{ counts.confirmedVoters }}</div><div class="lab">Confirmed voters</div></div>
+        <div class="stat"><div class="num">{{ counts.elections }}</div><div class="lab">Elections</div></div>
+        <div class="stat"><div class="num">{{ counts.parties }}</div><div class="lab">Parties</div></div>
+    </div>
+
+    <div class="row">
+        <nav class="col panel">
+            <h3>Manage</h3>
+            <p><a class="btn small" href="{{ path('admin_voter_index') }}">Voters</a></p>
+            <p><a class="btn small" href="{{ path('admin_election_index') }}">Elections</a></p>
+            <p><a class="btn small" href="{{ path('admin_party_index') }}">Parties</a></p>
+            <p><a class="btn small" href="{{ path('admin_poll_index') }}">Polls &amp; surveys</a></p>
+            <p><a class="btn small" href="{{ path('admin_roundtable_index') }}">Round tables</a></p>
+        </nav>
+        <section class="col">
+            <div class="panel">
+                <h3>Election activity</h3>
+                {% for item in electionRegistrationCounts %}
+                    <p><a href="{{ path('admin_election_show', {id: item.election.id}) }}">{{ item.election.name }}</a>
+                        · <span class="badge green">{{ item.count }} registered</span>
+                        <span class="badge muted">{{ item.votedCount }} voted</span></p>
+                {% else %}
+                    <p class="muted">No elections configured yet.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+{% endblock %}

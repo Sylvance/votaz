@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirm registration · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div class="panel" style="max-width:520px;margin:0 auto;">
+        <h2>Confirm your registration</h2>
+        <p>Thanks, <strong>{{ voter.firstName }}</strong>. We emailed a 6-digit confirmation code to <strong>{{ voter.email }}</strong>. Enter it below and choose a password to finish your registration.</p>
+
+        {% if error %}<div class="flash error">{{ error }}</div>{% endif %}
+
+        {% if devCode and app.environment == 'dev' %}
+            <div class="flash info">Development mode: your confirmation code is <strong>{{ devCode }}</strong> (email is disabled locally).</div>
+        {% endif %}
+
+        {{ form_start(form) }}
+            {{ form_row(form.code, {label: 'Confirmation code (6 digits)'}) }}
+            {{ form_row(form.password, {label: 'Create a password (min 8 chars, upper &amp; lower case + number)'}) }}
+            {{ form_row(form.confirmPassword, {label: 'Repeat password'}) }}
+            <div class="form-actions">
+                <button type="submit" class="btn">Confirm registration</button>
+            </div>
+        {{ form_end(form) }}
+
+        <form method="post" action="{{ path('app_register_resend') }}" class="mt">
+            <button type="submit" class="btn secondary small">Resend confirmation code</button>
+        </form>
+
+        <p class="mt small muted">Your voter number is <strong>{{ voter.voterNumber }}</strong>. Keep it safe — you will need it alongside the confirmation code to access your voter record.</p>
+    </div>
+{% endblock %}

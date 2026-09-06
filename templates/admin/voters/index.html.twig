@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Voter management · Admin · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <h1>Voter list management</h1>
+    <p class="muted">Search, approve, export, and import voters. CSV import: columns: national ID, first name, last name, gender, email (optional), phone (optional).</p>
+
+    <div class="row">
+        <section class="col">
+            <div class="panel">
+                <h3>Search voters</h3>
+                {{ form_start(form, {method: 'GET'}) }}
+                    {{ form_row(form.term) }}
+                    {{ form_row(form.status) }}
+                    <div class="form-actions">{{ form_row(form.search, {label: 'Search'}) }}</div>
+                {{ form_end(form) }}
+            </div>
+            <div class="panel">
+                <h3>Import voters (CSV)</h3>
+                <form method="post" action="{{ path('admin_voter_import') }}" enctype="multipart/form-data">
+                    <label class="small">District (default for imported voters)</label>
+                    <select name="district_id">
+                        <option value="">Nationwide</option>
+                        {% for district in districts %}
+                            <option value="{{ district.id }}">{{ district.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label class="small" style="margin-top:.5rem;">CSV file</label>
+                    <input type="file" name="csv_file" accept=".csv" style="margin-top:.3rem;">
+                    <div class="form-actions"><button type="submit" class="btn">Import</button></div>
+                </form>
+                <p class="small muted mt">A <a href="{{ path('admin_voter_export') }}">full CSV export</a> is also available.</p>
+            </div>
+        </section>
+        <section class="col">
+            <div class="panel">
+                <h3>Results ({{ voters|length }})</h3>
+                <table>
+                    <thead><tr><th>Voter #</th><th>Name</th><th>Status</th><th>Action</th></tr></thead>
+                    <tbody>
+                    {% for voter in voters %}
+                        <tr>
+                            <td><span class="small">{{ voter.voterNumber }}</span></td>
+                            <td><a href="{{ path('admin_voter_show', {id: voter.id}) }}">{{ voter.fullName }}</a></td>
+                            <td><span class="badge {{ voter.status.value == 'confirmed' ? 'green' : 'muted' }}">{{ voter.status.label }}</span></td>
+                            <td>
+                                {% if voter.status.value != 'confirmed' %}
+                                    <a class="btn small green" href="{{ path('admin_voter_set_status', {id: voter.id, status: 'confirmed'}) }}">Confirm</a>
+                                {% endif %}
+                                {% if voter.status.value != 'rejected' and voter.status.value != 'deactivated' %}
+                                    <a class="btn small danger" href="{{ path('admin_voter_set_status', {id: voter.id, status: 'deactivated'}) }}">Deactivate</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="4" class="muted">No voters found.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+{% endblock %}

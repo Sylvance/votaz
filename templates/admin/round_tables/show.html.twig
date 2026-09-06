@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ roundTable.title }} · Admin{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('admin_roundtable_index') }}">← All round tables</a></p>
+    <div class="panel">
+        <h1>{{ roundTable.title }}</h1>
+        <p><span class="badge {{ roundTable.status.value == 'live' ? 'green' : (roundTable.status.value == 'cancelled' ? 'red' : 'amber') }}">{{ roundTable.status.label }}</span>
+            <span class="badge muted">{{ roundTable.isOnline ? 'Online' : 'In-person' }}</span>
+            {% if roundTable.election %}<span class="badge muted">Election: <a href="{{ path('admin_election_show', {id: roundTable.election.id}) }}">{{ roundTable.election.name }}</a></span>{% endif %}
+        </p>
+        {% if roundTable.topic %}<p class="muted">Topic: {{ roundTable.topic }}</p>{% endif %}
+        <table>
+            <tr><th>Starts</th><td>{{ roundTable.scheduledAt ? roundTable.scheduledAt|date('d M Y H:i') : '—' }}</td></tr>
+            <tr><th>Ends</th><td>{{ roundTable.endsAt ? roundTable.endsAt|date('d M Y H:i') : '—' }}</td></tr>
+            <tr><th>Venue / link</th><td>{{ roundTable.location ?? '—' }}</td></tr>
+            <tr><th>Host / moderator</th><td>{{ roundTable.hostName ?? '—' }}</td></tr>
+        </table>
+        <div class="form-actions"><a class="btn secondary small" href="{{ path('admin_roundtable_edit', {id: roundTable.id}) }}">Edit</a></div>
+    </div>
+
+    <div class="panel">
+        <h2>Participants</h2>
+        <p class="muted">{{ roundTable.registrations.count }} registered</p>
+        <table>
+            <thead><tr><th>Name</th><th>Voter #</th><th>District</th><th>Registered</th></tr></thead>
+            <tbody>
+            {% for reg in roundTable.registrations %}
+                <tr>
+                    <td><a href="{{ path('admin_voter_show', {id: reg.voter.id}) }}">{{ reg.voter.fullName }}</a></td>
+                    <td class="small">{{ reg.voter.voterNumber }}</td>
+                    <td>{{ reg.voter.district ? reg.voter.district.name : '—' }}</td>
+                    <td class="small">{{ reg.registeredAt|date('d M Y') }}</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4" class="muted">No participants registered yet.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

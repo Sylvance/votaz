@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Elections · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <h1>Elections</h1>
+    <p class="muted">All elections run by {{ institution_name }}. Voter registration opens during the registration window for each election.</p>
+
+    <div class="grid mt">
+        {% for election in elections %}
+            <div class="card">
+                <h3><a href="{{ path('app_election_show', {id: election.id}) }}">{{ election.name }}</a></h3>
+                <p><span class="badge {{ election.type.value == 'by_election' ? 'amber' : 'muted' }}">{{ election.type.label }}</span>
+                    <span class="badge {{ election.status.value == 'voting' ? 'green' : (election.status.value == 'results_published' ? 'muted' : 'amber') }}">{{ election.status.label }}</span></p>
+                <p>{{ election.description|default('')|length > 160 ? election.description|slice(0, 160) ~ '…' : election.description|default('') }}</p>
+                <p class="meta">
+                    {% if election.district %}District: {{ election.district.name }}{% else %}Nationwide{% endif %}<br>
+                    Polling day: {{ election.votingStartAt|date('d M Y') }}
+                </p>
+            </div>
+        {% else %}
+            <div class="card"><p class="muted">No elections have been scheduled yet.</p></div>
+        {% endfor %}
+    </div>
+{% endblock %}

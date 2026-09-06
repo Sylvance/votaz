@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ party.name }} · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div class="panel">
+        <p><span class="badge">{{ party.abbreviation }}</span>
+            {% if party.status.value != 'approved' %}<span class="badge amber">{{ party.status.label }}</span>{% endif %}</p>
+        <h1>{{ party.name }}</h1>
+        {% if party.motto %}<p class="muted">“{{ party.motto }}”</p>{% endif %}
+        {% if party.description %}<p>{{ party.description }}</p>{% endif %}
+
+        <div class="statgrid mt">
+            <div class="stat"><div class="num">{{ party.leaderName }}</div><div class="lab">{{ party.leaderTitle ?? 'Leader' }}</div></div>
+            <div class="stat"><div class="num">{{ party.leaderAnnouncedAt ? party.leaderAnnouncedAt|date('d M Y') : '—' }}</div><div class="lab">Leadership announced</div></div>
+            <div class="stat"><div class="num">{{ party.registeredAt ? party.registeredAt|date('d M Y') : '—' }}</div><div class="lab">Registered</div></div>
+        </div>
+
+        {% if party.website or party.email or party.phone %}
+            <p class="small mt">
+                {% if party.website %}Website: <a href="{{ party.website }}">{{ party.website }}</a>{% endif %}
+                {% if party.email %} · Email: {{ party.email }}{% endif %}
+                {% if party.phone %} · Phone: {{ party.phone }}{% endif %}
+            </p>
+        {% endif %}
+    </div>
+
+    {% if manifesto and manifesto.isPublished %}
+        <div class="panel">
+            <h2>{{ manifesto.title }}</h2>
+            {% if manifesto.summary %}<p class="muted">{{ manifesto.summary }}</p>{% endif %}
+            {% if manifesto.sections is not empty %}
+                {% for section in manifesto.sections %}
+                    <div class="card mt">
+                        <h3>{{ section.title }}</h3>
+                        <p>{{ section.content }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="panel"><p class="muted">This party has not yet published a manifesto.</p></div>
+    {% endif %}
+{% endblock %}

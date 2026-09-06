@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Registration confirmed · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    {% if voter %}
+        <div class="panel" style="max-width:640px;margin:0 auto;text-align:center;">
+            <h2>Your voter registration is confirmed</h2>
+            <p>Welcome, {{ voter.fullName }}. You are now registered on the national voter roll.</p>
+            <div class="card mt">
+                <p><span class="badge green">Status: Confirmed</span></p>
+                <table>
+                    <tr><th>Voter number</th><td>{{ voter.voterNumber }}</td></tr>
+                    <tr><th>Confirmation code</th><td><strong>{{ voter.confirmationCode }}</strong></td></tr>
+                    <tr><th>National ID</th><td>{{ voter.nationalId }}</td></tr>
+                    <tr><th>Date of birth</th><td>{{ voter.dateOfBirth|date('d M Y') }}</td></tr>
+                    <tr><th>Registered on</th><td>{{ voter.confirmedAt|date('d M Y H:i') }}</td></tr>
+                </table>
+                <p class="small muted">Keep your voter number and confirmation code safe. You will need them to verify your record.</p>
+            </div>
+            <div class="form-actions" style="justify-content:center;">
+                <a class="btn" href="{{ path('app_login') }}">Sign in to your account</a>
+                <a class="btn secondary" href="{{ path('app_elections') }}">Browse elections</a>
+            </div>
+        </div>
+    {% else %}
+        <div class="panel"><h2>Thank you.</h2><p>Your voter registration has been confirmed.</p></div>
+    {% endif %}
+{% endblock %}

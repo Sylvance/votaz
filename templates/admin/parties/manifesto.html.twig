@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Manifesto · {{ party.name }} · Admin{% endblock %}
+
+{% block body %}
+    <div class="panel" style="max-width:680px;margin:0 auto;">
+        <h2>Manifesto — {{ party.name }}</h2>
+        {{ form_start(form) }}
+            {{ form_row(form.title) }}
+            {{ form_row(form.summary) }}
+            {{ form_row(form.isPublished) }}
+
+            <h3>Pledge sections</h3>
+            {{ form_label(form.sections) }}
+            <div id="manifesto-sections" data-prototype="{{ form_widget(form.sections.vars.prototype)|e('html_attr') }}">
+                {% for section in form.sections %}
+                    <div class="collection-row card mt" data-row>
+                        {{ form_row(section.title) }}
+                        {{ form_row(section.content) }}
+                        {{ form_row(section.position) }}
+                        <button type="button" class="btn danger small" data-remove-row>Remove</button>
+                    </div>
+                {% endfor %}
+            </div>
+            <p><button type="button" class="btn secondary small" data-add-row="data-add-row" id="add-section">Add a section</button></p>
+
+            <div class="form-actions">
+                <button type="submit" class="btn">Save manifesto</button>
+                <a class="btn secondary" href="{{ path('admin_party_show', {id: party.id}) }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+
+    <script>
+        (function () {
+            const container = document.getElementById('manifesto-sections');
+            const addBtn = document.getElementById('add-section');
+            if (!container || !addBtn) return;
+            let index = container.querySelectorAll('[data-row]').length;
+            addBtn.addEventListener('click', () => {
+                const html = container.dataset.prototype
+                    .replace(/__name__/g, index);
+                const wrap = document.createElement('div');
+                wrap.className = 'collection-row card mt';
+                wrap.dataset.row = '';
+                wrap.innerHTML = html;
+                const remove = document.createElement('button');
+                remove.type = 'button';
+                remove.className = 'btn danger small';
+                remove.textContent = 'Remove';
+                remove.addEventListener('click', () => wrap.remove());
+                wrap.appendChild(remove);
+                container.appendChild(wrap);
+                index++;
+            });
+            container.querySelectorAll('[data-remove-row]').forEach(btn => {
+                btn.addEventListener('click', () => btn.closest('[data-row]').remove());
+            });
+        })();
+    </script>
+{% endblock %}

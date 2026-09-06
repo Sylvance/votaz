@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ party.name }} · Admin{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('admin_party_index') }}">← All parties</a></p>
+    <div class="panel">
+        <h1>{{ party.name }} <span class="badge muted">{{ party.abbreviation }}</span></h1>
+        <p><span class="badge {{ party.status.value == 'approved' ? 'green' : 'amber' }}">{{ party.status.label }}</span></p>
+        <table>
+            <tr><th>Registration number</th><td>{{ party.registrationNumber }}</td></tr>
+            <tr><th>Leader</th><td>{{ party.leaderName }}<br><span class="muted small">{{ party.leaderTitle }}</span></td></tr>
+            <tr><th>Leadership announced</th><td>{{ party.leaderAnnouncedAt ? party.leaderAnnouncedAt|date('d M Y') : '—' }}</td></tr>
+            <tr><th>Registered on</th><td>{{ party.registeredAt ? party.registeredAt|date('d M Y') : '—' }}</td></tr>
+            <tr><th>Contact</th><td>{% if party.email %}{{ party.email }}{% endif %}{% if party.phone %} · {{ party.phone }}{% endif %}{% if not party.email and not party.phone %}—{% endif %}</td></tr>
+        </table>
+        <div class="form-actions">
+            <a class="btn secondary small" href="{{ path('admin_party_edit', {id: party.id}) }}">Edit</a>
+            <a class="btn small" href="{{ path('admin_party_manifesto_edit', {id: party.id}) }}">Edit manifesto</a>
+            <a class="btn green small" href="{{ path('admin_party_announce_leader', {id: party.id}) }}">Announce leadership</a>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Manifesto</h2>
+        {% if party.manifesto %}
+            <p><strong>{{ party.manifesto.title }}</strong>
+                <span class="badge {{ party.manifesto.isPublished ? 'green' : 'muted' }}">{{ party.manifesto.isPublished ? 'Published' : 'Draft' }}</span></p>
+            <p class="small muted">{{ party.manifesto.summary }}</p>
+            <p><a class="btn small" href="{{ path('admin_party_manifesto_edit', {id: party.id}) }}">Edit manifesto</a></p>
+        {% else %}
+            <p class="muted"><a href="{{ path('admin_party_manifesto_edit', {id: party.id}) }}">Create and edit the manifesto</a>.</p>
+        {% endif %}
+    </div>
+{% endblock %}

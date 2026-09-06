@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Polls &amp; surveys · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <h1>Polls &amp; surveys</h1>
+    <p class="muted">Opinion polls and citizen surveys run by {{ institution_name }}. Confirmed voters can respond once per poll.</p>
+
+    <section class="mt">
+        <h2>Open</h2>
+        <div class="grid">
+            {% for poll in openPolls %}
+                <div class="card">
+                    <h3><a href="{{ path('app_poll_show', {id: poll.id}) }}">{{ poll.title }}</a></h3>
+                    <p><span class="badge {{ poll.isSurvey ? 'amber' : 'muted' }}">{{ poll.isSurvey ? 'Survey' : 'Poll' }}</span>
+                        <span class="badge green">{{ poll.isOpen ? 'Open' : 'Closed' }}</span></p>
+                    <p class="meta">
+                        {% if poll.endsAt %}Closes {{ poll.endsAt|date('d M Y') }}{% else %}No closing date{% endif %}
+                        · {{ poll.questions.count }} question{{ poll.questions.count == 1 ? '' : 's' }}
+                    </p>
+                </div>
+            {% else %}
+                <div class="card"><p class="muted">No polls are open right now.</p></div>
+            {% endfor %}
+        </div>
+    </section>
+
+    {% if pastPolls is not empty %}
+        <section class="mt">
+            <h2>Recently closed</h2>
+            <div class="grid">
+                {% for poll in pastPolls %}
+                    <div class="card">
+                        <h3><a href="{{ path('app_poll_show', {id: poll.id}) }}">{{ poll.title }}</a></h3>
+                        <p class="meta">Closed {{ poll.endsAt|date('d M Y') }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sign in · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div class="panel" style="max-width:460px;margin:0 auto;">
+        <h2>Sign in</h2>
+        <p class="muted small">Use your email address (as used at registration) and the password you created when confirming your registration.</p>
+
+        {% if error %}
+            <div class="flash error">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        <form method="post" action="{{ path('app_login') }}">
+            <label class="small">Email address</label>
+            <input type="text" name="_username" value="{{ last_username }}" autocomplete="username" required autofocus style="width:100%;padding:.6rem .75rem;border:1px solid #cbd5e1;border-radius:8px;margin-bottom:.75rem;">
+
+            <label class="small">Password</label>
+            <input type="password" name="_password" autocomplete="current-password" required style="width:100%;padding:.6rem .75rem;border:1px solid #cbd5e1;border-radius:8px;margin-bottom:.75rem;">
+
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <div class="form-actions">
+                <button type="submit" class="btn">Sign in</button>
+            </div>
+        </form>
+        <p class="mt small muted">
+            Not registered yet? <a href="{{ path('app_register') }}">Register as a voter</a>.
+        </p>
+    </div>
+{% endblock %}

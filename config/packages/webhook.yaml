@@ -1,6 +1,0 @@
-framework:
-    webhook:
-        routing:
-            mailgun:
-                service: 'mailer.webhook.request_parser.mailgun'
-                secret: '%env(MAILGUN_WEBHOOK_SECRET)%'

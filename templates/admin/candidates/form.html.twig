@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Candidate · {{ election.name }} · Admin{% endblock %}
+
+{% block body %}
+    <div class="panel" style="max-width:620px;margin:0 auto;">
+        <h2>Candidate — {{ election.name }}</h2>
+        {{ form_start(form) }}
+            {{ form_row(form.fullName) }}
+            {{ form_row(form.party) }}
+            {{ form_row(form.district) }}
+            {{ form_row(form.motto) }}
+            {{ form_row(form.bio) }}
+            <div class="row">
+                <div class="col">{{ form_row(form.ballotPosition) }}</div>
+                <div class="col">{{ form_row(form.status) }}</div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn">Save candidate</button>
+                <a class="btn secondary" href="{{ path('admin_candidate_index', {id: election.id}) }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

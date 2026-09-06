@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Open round tables · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <h1>Open round tables &amp; town halls</h1>
+    <p class="muted">Scheduled and upcoming discussion events hosted by {{ institution_name }}, candidates, and civil society.</p>
+
+    <section class="mt">
+        <h2>Upcoming</h2>
+        <div class="grid">
+            {% for rt in roundTables %}
+                <div class="card">
+                    <h3><a href="{{ path('app_roundtable_show', {id: rt.id}) }}">{{ rt.title }}</a></h3>
+                    <p><span class="badge {{ rt.status.value == 'live' ? 'green' : 'amber' }}">{{ rt.status.label }}</span>
+                        <span class="badge muted">{{ rt.isOnline ? 'Online' : 'In-person' }}</span></p>
+                    <p class="meta">{{ rt.scheduledAt|date('D d M Y, H:i') }}{% if rt.endsAt %} – {{ rt.endsAt|date('H:i') }}{% endif %}</p>
+                    <p class="meta">{{ rt.location }}</p>
+                    <p class="small muted">Hosted by {{ rt.hostName }}</p>
+                    {% if rt.election %}<p class="small">Related: <a href="{{ path('app_election_show', {id: rt.election.id}) }}">{{ rt.election.name }}</a></p>{% endif %}
+                </div>
+            {% else %}
+                <div class="card"><p class="muted">No upcoming round tables.</p></div>
+            {% endfor %}
+        </div>
+    </section>
+
+    {% if past is not empty %}
+    <section class="mt">
+        <h2>Recently completed</h2>
+        {% for rt in past %}
+            <div class="card mt">
+                <h3>{{ rt.title }}</h3>
+                <p class="meta">{{ rt.scheduledAt|date('D d M Y, H:i') }} · {{ rt.location }}</p>
+            </div>
+        {% endfor %}
+    </section>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Voter registrations · {{ election.name }} · Admin{% endblock %}
+
+{% block body %}
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <h1>Voter registrations — {{ election.name }}</h1>
+        <form method="get" style="display:flex;gap:.5rem;align-items:center;">
+            <input type="text" name="term" value="{{ term }}" placeholder="Search name / ID / receipt">
+            <button class="btn small">Search</button>
+        </form>
+    </div>
+
+    <div class="panel mt">
+        <table>
+            <thead><tr><th>Voter</th><th>Voter #</th><th>Receipt</th><th>Status</th><th>Registered</th><th>Actions</th></tr></thead>
+            <tbody>
+            {% for reg in registrations %}
+                <tr>
+                    <td>
+                        <a href="{{ path('admin_voter_show', {id: reg.voter.id}) }}">{{ reg.voter.fullName }}</a><br>
+                        <span class="small muted">{{ reg.voter.district ? reg.voter.district.name : 'Nationwide' }}</span>
+                    </td>
+                    <td class="small">{{ reg.voter.voterNumber }}</td>
+                    <td class="small">{{ reg.receiptNumber ?? '—' }}</td>
+                    <td><span class="badge {{ reg.status.value in ['eligible','voted'] ? 'green' : (reg.status.value == 'rejected' ? 'red' : 'muted') }}">{{ reg.status.label }}</span></td>
+                    <td class="small">{{ reg.registeredAt|date('d M Y') }}</td>
+                    <td>
+                        {% if reg.status.value != 'eligible' and reg.status.value != 'voted' %}
+                            <a class="btn small green" href="{{ path('admin_election_voter_approve', {id: election.id, registrationId: reg.id}) }}">Approve</a>
+                        {% endif %}
+                        {% if reg.status.value == 'eligible' or reg.status.value == 'voted' %}
+                            <a class="btn secondary small" href="{{ path('app_profile_receipt', {id: reg.id}) }}" target="_blank">Receipt</a>
+                        {% endif %}
+                        {% if reg.status.value == 'pending' %}
+                            <form method="post" action="{{ path('admin_election_voter_reject', {id: election.id, registrationId: reg.id}) }}" style="display:inline;">
+                                <input type="hidden" name="reason" value="Eligibility could not be confirmed">
+                                <button class="btn danger small">Reject</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="6" class="muted">No registrations found.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

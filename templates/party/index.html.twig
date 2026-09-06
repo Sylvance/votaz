@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Political parties · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <h1>Registered political parties</h1>
+    <p class="muted">Parties registered with {{ institution_name }}, their leadership, and their published manifestos.</p>
+
+    <div class="grid mt">
+        {% for party in parties %}
+            <div class="card">
+                <h3><a href="{{ path('app_party_show', {id: party.id}) }}">{{ party.name }}</a></h3>
+                <p><span class="badge">{{ party.abbreviation }}</span>
+                    {% if party.motto %}<span class="muted small">{{ party.motto }}</span>{% endif %}</p>
+                <p>Leader: <strong>{{ party.leaderName }}</strong>{% if party.leaderTitle %} ({{ party.leaderTitle }}){% endif %}</p>
+                <p class="meta">Announced {{ party.leaderAnnouncedAt ? party.leaderAnnouncedAt|date('M Y') : '—' }} · Registered {{ party.registeredAt ? party.registeredAt|date('d M Y') : '—' }}</p>
+                {% if party.manifesto and party.manifesto.isPublished %}
+                    <span class="badge green">Manifesto published {% if party.manifesto.publishedAt %}{{ party.manifesto.publishedAt|date('M Y') }}{% endif %}</span>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="card"><p class="muted">No political parties registered yet.</p></div>
+        {% endfor %}
+    </div>
+{% endblock %}

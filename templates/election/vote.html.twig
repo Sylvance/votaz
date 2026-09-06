@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vote · {{ election.name }} · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div class="panel" style="max-width:640px;margin:0 auto;">
+        <h2>Cast your vote — {{ election.name }}</h2>
+        <p class="muted small">Voting is secret. Click on one candidate and confirm. Your vote cannot be changed once cast.</p>
+
+        <form method="post" action="{{ path('app_election_vote', {id: election.id}) }}">
+            {% for candidate in candidates %}
+                <div class="card mt" style="display:flex;align-items:flex-start;gap:.75rem;">
+                    <input type="radio" name="candidate_id" value="{{ candidate.id }}" id="c-{{ candidate.id }}" style="margin-top:.3rem;">
+                    <div style="flex:1;">
+                        <label for="c-{{ candidate.id }}" style="font-size:1rem;cursor:pointer;">
+                            <strong>{{ candidate.fullName }}</strong>
+                            {% if candidate.party %}<span class="badge">{{ candidate.party.abbreviation }}</span>{% else %}<span class="badge amber">Independent</span>{% endif %}
+                        </label>
+                        {% if candidate.motto %}<p class="muted small" style="margin:.2rem 0 0;">“{{ candidate.motto }}”</p>{% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <p class="muted">No candidates are standing in this election.</p>
+            {% endfor %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn green">Confirm my vote</button>
+                <a class="btn secondary" href="{{ path('app_election_show', {id: election.id}) }}">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

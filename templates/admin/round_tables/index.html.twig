@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Round tables · Admin · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <h1>Open round tables</h1>
+        <a class="btn" href="{{ path('admin_roundtable_new') }}">Schedule round table</a>
+    </div>
+
+    <div class="panel mt">
+        <table>
+            <thead><tr><th>Topic</th><th>Status</th><th>Starts</th><th>Registrations</th><th>Host</th><th>Actions</th></tr></thead>
+            <tbody>
+            {% for roundTable in roundTables %}
+                <tr>
+                    <td><a href="{{ path('admin_roundtable_show', {id: roundTable.id}) }}">{{ roundTable.title }}</a></td>
+                    <td><span class="badge {{ roundTable.status.value == 'live' ? 'green' : (roundTable.status.value == 'cancelled' ? 'red' : 'amber') }}">{{ roundTable.status.label }}</span></td>
+                    <td class="small">{{ roundTable.scheduledAt ? roundTable.scheduledAt|date('d M Y H:i') : '—' }}</td>
+                    <td>{{ roundTable.registrations.count }}</td>
+                    <td>{{ roundTable.hostName ?? '—' }}</td>
+                    <td><a class="btn secondary small" href="{{ path('admin_roundtable_edit', {id: roundTable.id}) }}">Edit</a></td>
+                </tr>
+            {% else %}
+                <tr><td colspan="6" class="muted">No round tables scheduled.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

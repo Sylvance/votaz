@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New discussion · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div class="panel" style="max-width:620px;margin:0 auto;">
+        <h2>Start a discussion</h2>
+        <p class="muted small">Choose a category and write your opening post.</p>
+
+        {{ form_start(form) }}
+            {{ form_row(form.title) }}
+            {{ form_row(form.category) }}
+            {{ form_row(form.election, {label: 'Related election (optional)'}) }}
+            {{ form_row(form.party, {label: 'Related party (optional)'}) }}
+            {{ form_row(form.content, {label: 'Your message'}) }}
+            <div class="form-actions">
+                <button type="submit" class="btn">Publish</button>
+                <a class="btn secondary" href="{{ path('app_forum_index') }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

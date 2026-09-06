@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Forums · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;">
+        <h1 style="margin:0;">Public forums</h1>
+        {% if app.user %}
+            <a class="btn" href="{{ path('app_forum_new') }}">Start a discussion</a>
+        {% endif %}
+    </div>
+
+    <p class="muted">Open discussions on elections, parties and civic life. Be respectful — the house rules apply.</p>
+
+    <nav class="mt mb">
+        <a class="btn secondary small {{ activeCategory is null ? '' : 'ghost' }}" href="{{ path('app_forum_index') }}">All</a>
+        {% for category in categories %}
+            <a class="btn secondary small {{ activeCategory == category ? '' : 'ghost' }}" href="{{ path('app_forum_index', {category: category.value}) }}">{{ category.label }}</a>
+        {% endfor %}
+    </nav>
+
+    <div class="panel">
+        {% for thread in threads %}
+            <div class="thread-item">
+                <p>
+                    {% if thread.isPinned %}<span class="badge amber">Pinned</span> {% endif %}
+                    {% if thread.isLocked %}<span class="badge muted">Locked</span> {% endif %}
+                    <span class="badge muted">{{ thread.category.label }}</span>
+                    <a href="{{ path('app_forum_show', {slug: thread.slug}) }}"><strong>{{ thread.title }}</strong></a><br>
+                    <span class="small muted">{{ thread.authorName }} · {{ thread.createdAt|date('d M Y H:i') }} ·
+                        {{ thread.posts.count }} repl{{ thread.posts.count == 1 ? 'y' : 'ies' }}</span>
+                </p>
+            </div>
+        {% else %}
+            <p class="muted">No discussions yet.{% if app.user %} <a href="{{ path('app_forum_new') }}">Start one</a>.{% endif %}</p>
+        {% endfor %}
+    </div>
+{% endblock %}

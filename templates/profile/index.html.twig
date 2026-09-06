@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My profile · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col">
+            <div class="panel">
+                <h2>My voter record</h2>
+                <p><span class="badge {{ voter.status.value == 'confirmed' ? 'green' : 'amber' }}">{{ voter.status.label }}</span></p>
+                <table>
+                    <tr><th>Full name</th><td>{{ voter.fullName }}</td></tr>
+                    <tr><th>Voter number</th><td><strong>{{ voter.voterNumber }}</strong></td></tr>
+                    <tr><th>Confirmation code</th><td>{{ voter.confirmationCode }}</td></tr>
+                    <tr><th>National ID</th><td>{{ voter.nationalId }}</td></tr>
+                    <tr><th>Date of birth</th><td>{{ voter.dateOfBirth|date('d M Y') }}</td></tr>
+                    <tr><th>Email</th><td>{{ voter.email ?? '—' }}</td></tr>
+                    <tr><th>Phone</th><td>{{ voter.phone ?? '—' }}</td></tr>
+                    <tr><th>District</th><td>{{ voter.district ? voter.district.name : 'Nationwide' }}</td></tr>
+                    <tr><th>Confirmed on</th><td>{{ voter.confirmedAt|date('d M Y H:i') }}</td></tr>
+                </table>
+            </div>
+        </div>
+        <div class="col">
+            <div class="panel">
+                <h2>Election registrations</h2>
+                {% for reg in registrations %}
+                    <div class="card mt">
+                        <h3><a href="{{ path('app_election_show', {id: reg.election.id}) }}">{{ reg.election.name }}</a></h3>
+                        <p><span class="badge {{ reg.status.value in ['eligible','voted'] ? 'green' : 'muted' }}">{{ reg.status.label }}</span>
+                            <span class="muted small">Receipt: {{ reg.receiptNumber ?? 'pending' }}</span></p>
+                        <p class="meta">
+                            Registration: {{ reg.registeredAt|date('d M Y') }}
+                            {% if reg.verifiedAt %} · Verified {{ reg.verifiedAt|date('d M Y') }}{% endif %}
+                        </p>
+                        {% if hasVoted[reg.election.id] %}
+                            <span class="badge green">Vote cast</span>
+                        {% elseif reg.status.value == 'eligible' and reg.election.isVotingOpen() %}
+                            <a class="btn green small" href="{{ path('app_election_vote', {id: reg.election.id}) }}">Cast your vote</a>
+                        {% endif %}
+                        {% if reg.receiptNumber %}
+                            <a class="btn secondary small" href="{{ path('app_profile_receipt', {id: reg.id}) }}">View receipt</a>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <p class="muted">You have not yet registered for any election. <a href="{{ path('app_elections') }}">Browse elections</a>.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Candidates · {{ election.name }} · Admin{% endblock %}
+
+{% block body %}
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <h1>Candidates — {{ election.name }}</h1>
+        <a class="btn" href="{{ path('admin_candidate_new', {id: election.id}) }}">Add candidate</a>
+    </div>
+
+    <div class="panel mt">
+        <table>
+            <thead><tr><th>#</th><th>Name</th><th>Party</th><th>District</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+            {% for candidate in candidates %}
+                <tr>
+                    <td>{{ candidate.ballotPosition }}</td>
+                    <td>{{ candidate.fullName }}</td>
+                    <td>{{ candidate.party ? candidate.party.name : '<span class="badge amber">Independent</span>'|raw }}</td>
+                    <td>{{ candidate.district ? candidate.district.name : '—' }}</td>
+                    <td><span class="badge {{ candidate.status.value == 'approved' ? 'green' : (candidate.status.value == 'rejected' ? 'red' : 'muted') }}">{{ candidate.status.label }}</span></td>
+                    <td>
+                        <a class="btn secondary small" href="{{ path('admin_candidate_edit', {id: election.id, candidateId: candidate.id}) }}">Edit</a>
+                        {% if candidate.status.value != 'approved' %}
+                            <a class="btn small green" href="{{ path('admin_candidate_set_status', {id: election.id, candidateId: candidate.id, status: 'approved'}) }}">Approve</a>
+                        {% endif %}
+                        {% if candidate.status.value == 'approved' %}
+                            <a class="btn small danger" href="{{ path('admin_candidate_set_status', {id: election.id, candidateId: candidate.id, status: 'withdrawn'}) }}">Withdraw</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="6" class="muted">No candidates yet. <a href="{{ path('admin_candidate_new', {id: election.id}) }}">Add one</a>.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

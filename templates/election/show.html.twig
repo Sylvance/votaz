@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ election.name }} · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div class="panel">
+        <span class="badge {{ election.type.value == 'by_election' ? 'amber' : 'muted' }}">{{ election.type.label }}</span>
+        <span class="badge {{ election.status.value == 'voting' ? 'green' : (election.status.value == 'results_published' ? 'muted' : 'amber') }}">{{ election.status.label }}</span>
+        {% if election.district %}<span class="badge muted">District: {{ election.district.name }}</span>{% endif %}
+        <h1 style="margin:.5rem 0;">{{ election.name }}</h1>
+        {% if election.description %}<p>{{ election.description }}</p>{% endif %}
+        {% if election.reason %}<p><strong>Why this election:</strong> {{ election.reason }}</p>{% endif %}
+
+        <div class="statgrid mt">
+            <div class="stat"><div class="num">{{ election.type.label == 'By-election' or election.type.value == 'by_election' ? '✓' : '' }}</div><div class="lab">Type: {{ election.type.label }}</div></div>
+            <div class="stat"><div class="num">{{ election.registrations|length }}</div><div class="lab">Registered voters</div></div>
+            <div class="stat"><div class="num">{{ election.candidates.count }}</div><div class="lab">Candidates</div></div>
+            <div class="stat"><div class="num">{{ election.votes.count }}</div><div class="lab">Votes cast</div></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <section class="col">
+            <div class="panel">
+                <h2>Key dates</h2>
+                <table>
+                    <tr><th>Voter registration</th>
+                        <td>{{ election.registrationStartAt ? election.registrationStartAt|date('d M Y') : '—' }} to {{ election.registrationEndAt ? election.registrationEndAt|date('d M Y') : '—' }}</td></tr>
+                    <tr><th>Candidate nomination</th>
+                        <td>{{ election.nominationStartAt ? election.nominationStartAt|date('d M Y') : '—' }} to {{ election.nominationEndAt ? election.nominationEndAt|date('d M Y') : '—' }}</td></tr>
+                    <tr><th>Polling day</th>
+                        <td>{{ election.votingStartAt|date('d M Y H:i') }} – {{ election.votingEndAt|date('d M Y H:i') }}</td></tr>
+                    {% if election.resultsPublishedAt %}<tr><th>Results announced</th><td>{{ election.resultsPublishedAt|date('d M Y H:i') }}</td></tr>{% endif %}
+                </table>
+
+                {% if app.user %}
+                    {% set reg = app.user.electionRegistrations|filter(r => r.election.id == election.id)|first ?? null %}
+                    {% if reg is not null %}
+                        <p class="mt"><span class="badge {{ reg.status.value == 'eligible' ? 'green' : (reg.status.value == 'voted' ? 'green' : 'muted') }}">{{ reg.status.label }}</span>
+                            <span class="muted small">Receipt: {{ reg.receiptNumber }}</span></p>
+                        {% if reg.status.value == 'eligible' and election.status.value == 'voting' %}
+                            <a class="btn green" href="{{ path('app_election_vote', {id: election.id}) }}">Cast your vote</a>
+                        {% endif %}
+                    {% else %}
+                        {% if election.isRegistrationOpen() %}
+                            <p class="mt"><a class="btn" href="{{ path('app_election_register', {id: election.id}) }}">Register for this election</a></p>
+                            <p class="small muted">Registration closes {{ election.registrationEndAt ? election.registrationEndAt|date('d M Y') : '' }}.</p>
+                        {% elseif election.status.value == 'voting' %}
+                            <p class="mt"><a class="btn" href="{{ path('app_election_register', {id: election.id}) }}">Vote now (not yet registered)</a></p>
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    <p class="mt"><a class="btn" href="{{ path('app_login') }}">Sign in</a> or
+                        <a class="btn secondary" href="{{ path('app_register') }}">Register</a> to take part in this election.</p>
+                {% endif %}
+            </div>
+        </section>
+        <section class="col">
+            <div class="panel">
+                <h2>Candidates ({{ election.approvedCandidates|length }})</h2>
+                {% for candidate in election.approvedCandidates %}
+                    <div class="card mt">
+                        <h3>{{ candidate.fullName }}</h3>
+                        <p>
+                            {% if candidate.party %}
+                                <span class="badge">{{ candidate.party.name }}</span> · <a href="{{ path('app_party_show', {id: candidate.party.id}) }}">Manifesto</a>
+                            {% else %}
+                                <span class="badge amber">Independent</span>
+                            {% endif %}
+                            {% if candidate.district %} · {{ candidate.district.name }}{% endif %}
+                        </p>
+                        {% if candidate.motto %}<p class="muted">“{{ candidate.motto }}”</p>{% endif %}
+                        {% if candidate.bio %}<p class="small">{{ candidate.bio }}</p>{% endif %}
+                    </div>
+                {% else %}
+                    <p class="muted">No candidates have been approved yet.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+{% endblock %}

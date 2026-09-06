@@ -7,17 +7,30 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.institution_name: '%env(APP_INSTITUTION_NAME)%'
+    app.institution_address: '%env(APP_INSTITUTION_ADDRESS)%'
+    app.institution_phone: '%env(APP_INSTITUTION_PHONE)%'
+    app.institution_email: '%env(APP_INSTITUTION_EMAIL)%'
+    app.min_voter_age: 18
 
 services:
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            string $institutionName: '%app.institution_name%'
+            string $institutionEmail: '%app.institution_email%'
+            int $minimumAge: '%app.min_voter_age%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/'
+        exclude:
+            - '../src/Kernel.php'
+            - '../src/Entity/'
+            - '../src/Dto/'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

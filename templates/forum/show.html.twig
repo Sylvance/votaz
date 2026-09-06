@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ thread.title }} · Forums · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div class="panel" style="max-width:720px;margin:0 auto;">
+        <p><span class="badge muted">{{ thread.category.label }}</span>
+            {% if thread.isPinned %}<span class="badge amber">Pinned</span>{% endif %}
+            {% if thread.isLocked %}<span class="badge muted">Locked</span>{% endif %}
+        </p>
+        <h1>{{ thread.title }}</h1>
+        <p class="small muted">Started by {{ thread.authorName }} · {{ thread.createdAt|date('d M Y, H:i') }}</p>
+
+        <div class="reply" style="margin-top:1rem;">
+            <p style="white-space:pre-wrap;">{{ thread.content }}</p>
+        </div>
+
+        <hr style="border:none;border-top:1px solid #e5e7eb;margin:1.5rem 0;">
+
+        <h3>Replies ({{ thread.posts|filter(p => not p.isRemoved)|length }})</h3>
+
+        {% for post in thread.posts|filter(p => not p.isRemoved) %}
+            <div class="reply mt">
+                <div style="display:flex;align-items:center;gap:.5rem;">
+                    <div class="avatar">{{ post.authorName|first }}</div>
+                    <div>
+                        <strong>{{ post.authorName }}</strong><br>
+                        <span class="small muted">{{ post.createdAt|date('d M Y H:i') }}</span>
+                    </div>
+                </div>
+                <p style="white-space:pre-wrap;margin:.5rem 0 0;">{{ post.content }}</p>
+            </div>
+        {% else %}
+            <p class="muted">No replies yet. Be the first to respond.</p>
+        {% endfor %}
+
+        {% if not thread.isLocked %}
+            {% if app.user %}
+                <h3 class="mt">Add a reply</h3>
+                {{ form_start(form) }}
+                    {{ form_row(form.content, {label: 'Message'}) }}
+                    <div class="form-actions">
+                        <button type="submit" class="btn">Post reply</button>
+                    </div>
+                {{ form_end(form) }}
+            {% else %}
+                <p class="mt muted"><a href="{{ path('app_login') }}">Sign in</a> to join the discussion.</p>
+            {% endif %}
+        {% else %}
+            <p class="mt muted">This discussion is locked — no new replies are accepted.</p>
+        {% endif %}
+    </div>
+{% endblock %}

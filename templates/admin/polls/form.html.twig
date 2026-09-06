@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ poll ? poll.title : 'New poll' }} · Admin{% endblock %}
+
+{% block body %}
+    <div class="panel" style="max-width:720px;margin:0 auto;">
+        <h2>{{ poll ? 'Edit poll' : 'New poll / survey' }}</h2>
+        {{ form_start(form) }}
+            {{ form_row(form.title) }}
+            {{ form_row(form.description) }}
+            {{ form_row(form.isSurvey) }}
+            <div class="row">
+                <div class="col">{{ form_row(form.startsAt) }}</div>
+                <div class="col">{{ form_row(form.endsAt) }}</div>
+            </div>
+            {{ form_row(form.requiresAuth) }}
+            {{ form_row(form.showResultsAfterEnd) }}
+            <hr style="border:none;border-top:1px solid #e5e7eb;margin:1.25rem 0;">
+            <h3>Questions</h3>
+            {{ form_errors(form.questions) }}
+            <div data-collection="question"
+                 data-prototype="{{ form_widget(form.questions.vars.prototype)|e('html_attr') }}">
+                {% for question in form.questions %}
+                    <div class="collection-entry card mt">
+                        <div class="row">
+                            <div class="col">{{ form_row(question.title) }}</div>
+                            <div class="col">{{ form_row(question.position) }}</div>
+                        </div>
+                        {{ form_row(question.type) }}
+                        {{ form_row(question.required) }}
+                        <h4 style="margin:.75rem 0 .25rem;">Options</h4>
+                        <div data-collection="option"
+                             data-prototype="{{ form_widget(question.options.vars.prototype)|e('html_attr') }}">
+                            {% for option in question.options %}
+                                <div class="collection-entry card mt">
+                                    {{ form_row(option.label) }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn">Save poll</button>
+                {% if poll %}
+                    <a class="btn secondary" href="{{ path('admin_poll_show', {id: poll.id}) }}">Cancel</a>
+                    <a class="btn green small" href="{{ path('admin_poll_publish', {id: poll.id}) }}">Publish</a>
+                {% else %}
+                    <a class="btn secondary" href="{{ path('admin_poll_index') }}">Cancel</a>
+                {% endif %}
+            </div>
+        {{ form_end(form) }}
+    </div>
+
+    <script>
+        (function () {
+            const labels = { question: 'question', option: 'option' };
+            function newCollectionPrototype(container) {
+                const add = document.createElement('button');
+                add.type = 'button';
+                add.className = 'btn secondary small';
+                add.textContent = '+ Add ' + (labels[container.dataset.collection] || 'item');
+                const holder = document.createElement('p');
+                holder.appendChild(add);
+                container.parentNode.insertBefore(holder, container.nextSibling);
+                let index = container.querySelectorAll('.collection-entry').length;
+                add.addEventListener('click', () => {
+                    const div = document.createElement('div');
+                    div.className = 'collection-entry card mt';
+                    div.innerHTML = container.dataset.prototype.replace(/__name__/g, index);
+                    const rm = document.createElement('button');
+                    rm.type = 'button';
+                    rm.className = 'btn danger small';
+                    rm.textContent = 'Remove';
+                    rm.addEventListener('click', () => div.remove());
+                    div.appendChild(rm);
+                    container.appendChild(div);
+                    bind(div);
+                    index++;
+                });
+            }
+            function bind(scope) {
+                scope.querySelectorAll('[data-collection]').forEach(c => newCollectionPrototype(c));
+                scope.querySelectorAll('.collection-entry').forEach(entry => {
+                    if (entry.dataset.bound) return;
+                    entry.dataset.bound = '1';
+                });
+            }
+            bind(document);
+        })();
+    </script>
+{% endblock %}

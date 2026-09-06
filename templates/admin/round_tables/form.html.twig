@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ roundTable ? roundTable.title : 'Schedule round table' }} · Admin{% endblock %}
+
+{% block body %}
+    <div class="panel" style="max-width:640px;margin:0 auto;">
+        <h2>{{ roundTable ? 'Edit round table' : 'Schedule an open round table' }}</h2>
+        {{ form_start(form) }}
+            {{ form_row(form.title) }}
+            {{ form_row(form.description) }}
+            {{ form_row(form.topic) }}
+            <div class="row">
+                <div class="col">{{ form_row(form.scheduledAt) }}</div>
+                <div class="col">{{ form_row(form.endsAt) }}</div>
+            </div>
+            {{ form_row(form.isOnline) }}
+            {{ form_row(form.location) }}
+            {{ form_row(form.hostName) }}
+            {{ form_row(form.election) }}
+            {{ form_row(form.status) }}
+            <div class="form-actions">
+                <button type="submit" class="btn">Save</button>
+                <a class="btn secondary" href="{{ path('admin_roundtable_index') }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

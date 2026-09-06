@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }} · Admin · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div class="panel" style="max-width:680px;margin:0 auto;">
+        <h2>{{ title }}</h2>
+        {{ form_start(form) }}
+            {{ form_row(form.name) }}
+            {{ form_row(form.type) }}
+            {{ form_row(form.description) }}
+            <div class="row">
+                <div class="col">{{ form_row(form.registrationStartAt) }}</div>
+                <div class="col">{{ form_row(form.registrationEndAt) }}</div>
+            </div>
+            <div class="row">
+                <div class="col">{{ form_row(form.nominationStartAt) }}</div>
+                <div class="col">{{ form_row(form.nominationEndAt) }}</div>
+            </div>
+            <div class="row">
+                <div class="col">{{ form_row(form.votingStartAt) }}</div>
+                <div class="col">{{ form_row(form.votingEndAt) }}</div>
+            </div>
+            {{ form_row(form.district) }}
+            {{ form_row(form.status) }}
+            <div class="form-actions">
+                <button type="submit" class="btn">Save election</button>
+                <a class="btn secondary" href="{{ path('admin_election_index') }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

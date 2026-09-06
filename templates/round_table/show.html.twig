@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ roundTable.title }} · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div class="panel" style="max-width:720px;margin:0 auto;">
+        <p><span class="badge {{ roundTable.status.value == 'live' ? 'green' : 'amber' }}">{{ roundTable.status.label }}</span>
+            <span class="badge muted">{{ roundTable.isOnline ? 'Online' : 'In-person' }}</span></p>
+        <h1>{{ roundTable.title }}</h1>
+        {% if roundTable.topic %}<p class="muted">Topic: {{ roundTable.topic }}</p>{% endif %}
+
+        <div class="statgrid mt">
+            <div class="stat"><div class="num">{{ roundTable.scheduledAt|date('d M Y H:i') }}</div><div class="lab">Starts</div></div>
+            <div class="stat"><div class="num">{{ roundTable.endsAt ? roundTable.endsAt|date('H:i') : '—' }}</div><div class="lab">Ends</div></div>
+            <div class="stat"><div class="num">{{ roundTable.registrations.count }}</div><div class="lab">Attendees</div></div>
+        </div>
+
+        {% if roundTable.location %}
+            <p class="mt"><strong>Venue / Link:</strong> {{ roundTable.location }}</p>
+        {% endif %}
+
+        <p><strong>Host:</strong> {{ roundTable.hostName }}</p>
+        <p class="small">{{ roundTable.description }}</p>
+
+        {% if roundTable.election %}
+            <p class="small">Related election: <a href="{{ path('app_election_show', {id: roundTable.election.id}) }}">{{ roundTable.election.name }}</a></p>
+        {% endif %}
+
+        {% if app.user %}
+            {% if registration is null %}
+                {% if roundTable.status.value == 'scheduled' %}
+                    <form method="post" action="{{ path('app_roundtable_register', {id: roundTable.id}) }}" class="mt">
+                        <button type="submit" class="btn">Register attendance</button>
+                    </form>
+                {% endif %}
+            {% else %}
+                <p class="mt"><span class="badge green">Registered to attend</span></p>
+            {% endif %}
+            {% if discussion %}
+                <a class="btn secondary mt" href="{{ path('app_forum_show', {slug: discussion.slug}) }}">Join discussion</a>
+            {% else %}
+                <form method="post" action="{{ path('app_roundtable_discuss', {id: roundTable.id}) }}" class="mt">
+                    <button type="submit" class="btn secondary">Start discussion thread</button>
+                </form>
+            {% endif %}
+        {% else %}
+            <p class="mt"><a class="btn" href="{{ path('app_login') }}">Sign in</a> to register or join the discussion.</p>
+        {% endif %}
+    </div>
+{% endblock %}

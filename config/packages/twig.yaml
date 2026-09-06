@@ -1,5 +1,9 @@
 twig:
     file_name_pattern: '*.twig'
+    globals:
+        institution_name: '%app.institution_name%'
+        institution_address: '%app.institution_address%'
+        institution_phone: '%app.institution_phone%'
 
 when@test:
     twig:

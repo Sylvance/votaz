@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ poll.title }} · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div class="panel" style="max-width:680px;margin:0 auto;">
+        <p><span class="badge {{ poll.isSurvey ? 'amber' : 'muted' }}">{{ poll.isSurvey ? 'Survey' : 'Poll' }}</span>
+            {% if poll.isOpen %}<span class="badge green">Open</span>{% else %}<span class="badge muted">Closed</span>{% endif %}
+            <span class="small muted">{% if poll.endsAt %}Closes {{ poll.endsAt|date('d M Y H:i') }}{% else %}No closing date{% endif %}</span></p>
+        <h1>{{ poll.title }}</h1>
+        {% if poll.description %}<p class="muted">{{ poll.description }}</p>{% endif %}
+
+        {% if poll.isOpen and not response %}
+            {% if poll.requiresAuth and not app.user %}
+                <div class="flash info">Only confirmed voters can respond. <a href="{{ path('app_login') }}">Sign in</a> or <a href="{{ path('app_register') }}">register</a>.</div>
+            {% else %}
+                <form method="post" action="{{ path('app_poll_respond', {id: poll.id}) }}">
+                    {% for question in poll.questions %}
+                        <div class="poll-question">
+                            <h3>{{ question.title }}{% if question.isRequired %} <span class="muted small">(required)</span>{% endif %}</h3>
+                            {% for option in question.options %}
+                                <div class="checkbox">
+                                    {% if question.type.value == 'multiple' %}
+                                        <input type="checkbox" name="question_{{ question.id }}[]" value="{{ option.id }}" id="q{{ question.id }}-o{{ option.id }}">
+                                    {% else %}
+                                        <input type="radio" name="question_{{ question.id }}[]" value="{{ option.id }}" id="q{{ question.id }}-o{{ option.id }}">
+                                    {% endif %}
+                                    <label for="q{{ question.id }}-o{{ option.id }}">{{ option.label }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    <div class="form-actions">
+                        <button type="submit" class="btn">Submit response</button>
+                    </div>
+                </form>
+            {% endif %}
+        {% else %}
+            <div class="flash info">{% if response %}You have already responded to this poll.{% else %}This poll is closed to new responses.{% endif %}</div>
+        {% endif %}
+
+        {% if poll.resultsVisible() %}
+            <h2 class="mt">Current results</h2>
+            {% for qid, r in results %}
+                <div class="poll-question">
+                    <h3>{{ r.question.title }}</h3>
+                    {% for option in r.question.options %}
+                        {% set count = r.counts[option.id] ?? 0 %}
+                        {% set pct = r.total > 0 ? (count / r.total * 100)|round(1) : 0 %}
+                        <p class="small" style="margin-bottom:.2rem;">{{ option.label }} — {{ count }} ({{ pct }}%)</p>
+                        <div class="result-bar"><div class="fill" style="width:{{ pct }}%"></div></div>
+                    {% endfor %}
+                    <p class="small muted">Total responses: {{ r.total }}</p>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}

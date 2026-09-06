@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Registration receipt · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <style>
+        @media print { body { background: #fff; } .topbar, header.site, footer, .btn, nav { display: none !important; } }
+        .print-bar { text-align:center; margin-bottom:1rem; }
+    </style>
+
+    <div class="print-bar"><button class="btn" onclick="window.print()">Print this receipt</button></div>
+
+    <div class="receipt">
+        <div class="head">
+            <div>
+                <strong style="color:#1e3a8a;font-size:1.1rem;">{{ institution_name }}</strong><br>
+                <span class="muted small">{{ institution_address }}</span>
+            </div>
+            <div style="text-align:right;">
+                <strong>Official voter registration receipt</strong><br>
+                <span class="muted small">Serial: {{ registration.receiptNumber }}</span>
+            </div>
+        </div>
+        <table>
+            <tr><th>Voter full name</th><td>{{ registration.voter.fullName }}</td></tr>
+            <tr><th>Voter number</th><td><strong>{{ registration.voter.voterNumber }}</strong></td></tr>
+            <tr><th>National ID</th><td>{{ registration.voter.nationalId }}</td></tr>
+            <tr><th>Date of birth</th><td>{{ registration.voter.dateOfBirth|date('d M Y') }}</td></tr>
+            <tr><th>Election</th><td>{{ registration.election.name }}</td></tr>
+            <tr><th>District</th><td>{{ registration.election.district ? registration.election.district.name : 'Nationwide' }}</td></tr>
+            <tr><th>Election registration status</th><td><strong>{{ registration.status.label }}</strong></td></tr>
+            <tr><th>Registered on</th><td>{{ registration.registeredAt|date('d M Y H:i') }}</td></tr>
+            <tr><th>Verified on</th><td>{{ registration.verifiedAt ? registration.verifiedAt|date('d M Y H:i') : '—' }}</td></tr>
+        </table>
+        <hr style="border:none;border-top:2px dashed #c7d2fe;margin:1.25rem 0;">
+        <p class="small" style="margin:0;color:#374151;">
+            This receipt confirms your voter registration for the above election. Keep this printout in a safe place. You may be asked to present your confirmation code together with a valid national ID at a polling station if your eligibility is in question.
+        </p>
+        <p class="small muted" style="margin:1rem 0 0;">Confirmed voter: {{ registration.voter.fullName }} ({{ registration.voter.confirmationCode }})</p>
+    </div>
+{% endblock %}

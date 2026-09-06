@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ party ? party.name : 'New party' }} · Admin{% endblock %}
+
+{% block body %}
+    <div class="panel" style="max-width:640px;margin:0 auto;">
+        <h2>{{ party ? 'Edit party — '.party.name : 'Register a new party' }}</h2>
+        {{ form_start(form) }}
+            {{ form_row(form.name) }}
+            <div class="row">
+                <div class="col">{{ form_row(form.abbreviation) }}</div>
+                <div class="col">{{ form_row(form.registrationNumber) }}</div>
+            </div>
+            {{ form_row(form.leaderName) }}
+            <div class="row">
+                <div class="col">{{ form_row(form.leaderTitle) }}</div>
+                <div class="col">{{ form_row(form.leaderAnnouncedAt) }}</div>
+            </div>
+            {{ form_row(form.motto) }}
+            {{ form_row(form.description) }}
+            <div class="row">
+                <div class="col">{{ form_row(form.website) }}</div>
+                <div class="col">{{ form_row(form.email) }}</div>
+            </div>
+            {{ form_row(form.phone) }}
+            {{ form_row(form.status) }}
+            <div class="form-actions">
+                <button type="submit" class="btn">Save party</button>
+                <a class="btn secondary" href="{{ path('admin_party_index') }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

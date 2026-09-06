@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <section class="hero">
+        <h1>Welcome to the {{ institution_name }}</h1>
+        <p>Register as a voter, confirm your registration, follow elections, parties and manifestos, take part in polls and join the public consultation round tables and forums.</p>
+        <div class="actions">
+            <a class="btn secondary" href="{{ path('app_elections') }}">View elections</a>
+            <a class="btn" href="{{ path('app_register') }}">Register to vote</a>
+            {% if not app.user %}<a class="btn ghost" href="{{ path('app_login') }}">Sign in</a>{% endif %}
+        </div>
+    </section>
+
+    <section class="mb">
+        <h2>Active elections</h2>
+        {% if upcomingElections is empty %}
+            <div class="card"><p class="muted">No elections are currently open for registration or voting.</p></div>
+        {% else %}
+            <div class="grid">
+                {% for election in upcomingElections %}
+                    <div class="card">
+                        <h3><a href="{{ path('app_election_show', {id: election.id}) }}">{{ election.name }}</a></h3>
+                        <p>{{ election.type.label }}</p>
+                        <p class="meta">
+                            {% if election.district %}District: {{ election.district.name }}{% else %}Nationwide{% endif %}<br>
+                            Voting: {{ election.votingStartAt|date('d M Y') }} – {{ election.votingEndAt|date('d M Y') }}
+                        </p>
+                        <span class="badge {{ election.status.value in ['voting'] ? 'green' : 'amber' }}">{{ election.status.label }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+
+    <div class="row">
+        <section class="col">
+            <div class="panel">
+                <h2>Registered parties</h2>
+                {% for party in parties %}
+                    <p><a href="{{ path('app_party_show', {id: party.id}) }}"><strong>{{ party.name }}</strong></a>
+                        <span class="muted">· Leader: {{ party.leaderName }}{% if party.leaderAnnouncedAt %} (announced {{ party.leaderAnnouncedAt|date('M Y') }}){% endif %}</span></p>
+                {% else %}
+                    <p class="muted">No parties registered yet.</p>
+                {% endfor %}
+            </div>
+        </section>
+        <section class="col">
+            <div class="panel">
+                <h2>Latest polls</h2>
+                {% for poll in recentPolls %}
+                    <p><a href="{{ path('app_poll_show', {id: poll.id}) }}">{{ poll.title }}</a>
+                        <span class="badge muted">{{ poll.isSurvey ? 'Survey' : 'Poll' }}</span></p>
+                {% else %}
+                    <p class="muted">No polls posted yet.</p>
+                {% endfor %}
+            </div>
+            <div class="panel">
+                <h2>Open round tables</h2>
+                {% for rt in upcomingRoundTables %}
+                    <p><a href="{{ path('app_roundtable_show', {id: rt.id}) }}">{{ rt.title }}</a><br>
+                        <span class="muted small">{{ rt.scheduledAt|date('D d M Y, H:i') }} · {{ rt.isOnline ? 'Online' : rt.location }}</span></p>
+                {% else %}
+                    <p class="muted">No round tables scheduled yet.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+{% endblock %}

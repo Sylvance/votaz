@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ election.name }} · Admin · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('admin_election_index') }}">← All elections</a></p>
+
+    <div class="panel">
+        <h1>{{ election.name }}</h1>
+        <p><span class="badge muted">{{ election.type.label }}</span>
+            <span class="badge {{ election.status.value == 'voting' ? 'green' : (election.status.value == 'results_published' ? 'muted' : 'amber') }}">{{ election.status.label }}</span>
+            {% if election.district %}<span class="badge muted">District: {{ election.district.name }}</span>{% endif %}
+        </p>
+        <div class="statgrid">
+            <div class="stat"><div class="num">{{ voterCount }}</div><div class="lab">Registered</div></div>
+            <div class="stat"><div class="num">{{ approvedCount }}</div><div class="lab">Eligible</div></div>
+            <div class="stat"><div class="num">{{ votedCount }}</div><div class="lab">Voted</div></div>
+            <div class="stat"><div class="num">{{ election.candidates.count }}</div><div class="lab">Candidates</div></div>
+        </div>
+        <div class="form-actions">
+            <a class="btn secondary small" href="{{ path('admin_election_edit', {id: election.id}) }}">Edit details</a>
+            <a class="btn small" href="{{ path('admin_candidate_index', {id: election.id}) }}">Manage candidates</a>
+            <a class="btn small" href="{{ path('admin_election_voters', {id: election.id}) }}">Voter registrations</a>
+            {% if election.status.value != 'results_published' %}
+                <a class="btn green small" href="{{ path('admin_election_publish_results', {id: election.id}) }}">Publish results</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if election.status.value == 'results_published' %}
+        <div class="panel">
+            <h2>Results</h2>
+            {% if tally %}
+                <p>{{ tally.total_votes }} votes cast{% if tally.turnout_pct is not null %} · turnout {{ tally.turnout_pct }}%{% endif %} ({{ tally.eligible }} eligible)</p>
+                {% for item in tally.by_candidate %}
+                    {% set pct = tally.total_votes > 0 ? (item.votes / tally.total_votes * 100)|round(1) : 0 %}
+                    <p style="margin-bottom:.2rem;">
+                        <strong>{{ item.candidate.fullName }}</strong>
+                        {% if item.candidate.party %}<span class="badge muted">{{ item.candidate.party.abbreviation }}</span>{% endif %}
+                        — {{ item.votes }} ({{ pct }}%)
+                        {% if loop.first and tally.total_votes > 0 %}<span class="badge green">Elected</span>{% endif %}
+                    </p>
+                    <div class="result-bar"><div class="fill" style="width:{{ pct }}%"></div></div>
+                {% endfor %}
+            {% else %}
+                <p class="muted">No results to display.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="panel">
+        <h2>Candidates</h2>
+        <table>
+            <thead><tr><th>Position</th><th>Name</th><th>Party</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+            {% for candidate in candidates %}
+                <tr>
+                    <td>{{ candidate.ballotPosition }}</td>
+                    <td>{{ candidate.fullName }}</td>
+                    <td>{{ candidate.party ? candidate.party.name : '<span class="badge amber">Independent</span>'|raw }}</td>
+                    <td><span class="badge {{ candidate.status.value == 'approved' ? 'green' : 'muted' }}">{{ candidate.status.label }}</span></td>
+                    <td><a class="btn secondary small" href="{{ path('admin_candidate_edit', {id: election.id, candidateId: candidate.id}) }}">Edit</a></td>
+                </tr>
+            {% else %}
+                <tr><td colspan="5" class="muted">No candidates yet.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

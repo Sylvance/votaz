@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Parties · Admin · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <h1>Political parties</h1>
+        <a class="btn" href="{{ path('admin_party_new') }}">Register party</a>
+    </div>
+
+    <div class="panel mt">
+        <table>
+            <thead><tr><th>Party</th><th>Leader</th><th>Leadership announced</th><th>Status</th><th>Manifesto</th><th>Actions</th></tr></thead>
+            <tbody>
+            {% for party in parties %}
+                <tr>
+                    <td><strong>{{ party.name }}</strong> <span class="badge muted">{{ party.abbreviation }}</span></td>
+                    <td>{{ party.leaderName }}</td>
+                    <td class="small">{{ party.leaderAnnouncedAt ? party.leaderAnnouncedAt|date('d M Y') : '—' }}</td>
+                    <td><span class="badge {{ party.status.value == 'approved' ? 'green' : (party.status.value == 'rejected' ? 'red' : 'amber') }}">{{ party.status.label }}</span></td>
+                    <td>{{ party.manifesto ? (party.manifesto.isPublished ? 'Published' : 'Draft') : '—' }}</td>
+                    <td>
+                        <a class="btn secondary small" href="{{ path('admin_party_show', {id: party.id}) }}">Open</a>
+                        <a class="btn small" href="{{ path('admin_party_manifesto_edit', {id: party.id}) }}">Manifesto</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="6" class="muted">No parties registered.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -1,14 +1,67 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Conference Guide{% endblock %}</title>
-    </head>
-    <body>
-        <header>
-            <nav>{# ... links shared by all pages ... #}</nav>
-        </header>
-        {% block body %}{% endblock %}
-        <footer>&copy; {{ 'now'|date('Y') }} Conference Guide</footer>
-    </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ institution_name }}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+</head>
+<body>
+<div class="topbar">
+    <div class="wrap">
+        <span>Official site of {{ institution_name }}</span>
+        <span>{{ institution_address }} · {{ institution_phone }}</span>
+    </div>
+</div>
+<header class="site">
+    <div class="wrap nav">
+        <a class="brand" href="{{ path('app_home') }}">Vot<span>az</span></a>
+        <nav class="nav-links">
+            <a href="{{ path('app_home') }}">Home</a>
+            <a href="{{ path('app_elections') }}">Elections</a>
+            <a href="{{ path('app_parties') }}">Parties</a>
+            <a href="{{ path('app_polls') }}">Polls</a>
+            <a href="{{ path('app_forum_index') }}">Forums</a>
+            <a href="{{ path('app_roundtable_index') }}">Round Tables</a>
+        </nav>
+        <nav class="nav-links">
+            {% if app.user %}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a class="btn secondary small" href="{{ path('admin_dashboard') }}">Admin</a>
+                {% endif %}
+                <a class="btn secondary small" href="{{ path('app_profile') }}">My Profile</a>
+                <a class="btn small" href="{{ path('app_logout') }}">Sign out</a>
+            {% else %}
+                <a class="btn secondary small" href="{{ path('app_login') }}">Sign in</a>
+                <a class="btn small" href="{{ path('app_register') }}">Register to vote</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+
+<main class="wrap">
+    {% for label, messages in app.flashes %}
+        <div class="flashes">
+            {% for message in messages %}
+                <div class="flash {{ label }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+    {% block body %}{% endblock %}
+</main>
+
+<footer class="footer">
+    <div class="wrap">
+        <div>
+            <strong>{{ institution_name }}</strong><br>
+            {{ institution_address }}
+        </div>
+        <div>
+            Phone: {{ institution_phone }}<br>
+            Complaint &amp; enquiry desk available during office hours.
+        </div>
+    </div>
+</footer>
+</body>
 </html>

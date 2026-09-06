@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ poll.title }} · Admin{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('admin_poll_index') }}">← All polls</a></p>
+    <div class="panel">
+        <h1>{{ poll.title }}</h1>
+        <p><span class="badge {{ poll.isSurvey ? 'amber' : 'muted' }}">{{ poll.isSurvey ? 'Survey' : 'Poll' }}</span>
+            <span class="badge {{ poll.publishedAt ? 'green' : 'amber' }}">{{ poll.publishedAt ? 'Published' : 'Draft' }}</span>
+            {% if poll.isOpen() %}<span class="badge green">Open</span>{% endif %}
+        </p>
+        <p>{{ poll.description }}</p>
+        <table>
+            <tr><th>Opens</th><td>{{ poll.startsAt ? poll.startsAt|date('d M Y H:i') : '—' }}</td></tr>
+            <tr><th>Closes</th><td>{{ poll.endsAt ? poll.endsAt|date('d M Y H:i') : '—' }}</td></tr>
+            <tr><th>Requires login</th><td>{{ poll.requiresAuth ? 'Yes' : 'No' }}</td></tr>
+            <tr><th>Responses</th><td>{{ poll.responses.count }}</td></tr>
+        </table>
+        <div class="form-actions">
+            <a class="btn secondary small" href="{{ path('admin_poll_edit', {id: poll.id}) }}">Edit</a>
+            {% if not poll.publishedAt %}
+                <a class="btn green small" href="{{ path('admin_poll_publish', {id: poll.id}) }}">Publish</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% for qid, r in results %}
+        <div class="panel">
+            <h2>{{ r.question.position }}. {{ r.question.title }}
+                <span class="badge muted">{{ r.question.type.label }}</span></h2>
+            {% for option in r.question.options %}
+                {% set count = r.counts[option.id] ?? 0 %}
+                {% set pct = r.total > 0 ? (count / r.total * 100)|round(1) : 0 %}
+                <p class="small" style="margin-bottom:.2rem;">{{ option.label }} — <strong>{{ count }}</strong> ({{ pct }}%)</p>
+                <div class="result-bar"><div class="fill" style="width:{{ pct }}%"></div></div>
+            {% else %}
+                <p class="muted">No options.</p>
+            {% endfor %}
+            <p class="small muted">Total responses: {{ r.total }}</p>
+        </div>
+    {% else %}
+        <div class="panel"><p class="muted">No questions in this poll yet.</p></div>
+    {% endfor %}
+{% endblock %}

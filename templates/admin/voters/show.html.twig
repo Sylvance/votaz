@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Voter {{ voter.voterNumber }} · Admin · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('admin_voter_index') }}">← All voters</a></p>
+    <div class="panel">
+        <h1>{{ voter.fullName }}</h1>
+        <p><span class="badge {{ voter.status.value == 'confirmed' ? 'green' : (voter.status.value == 'rejected' ? 'red' : 'muted') }}">{{ voter.status.label }}</span>
+            Confirmed {{ voter.confirmedAt ? voter.confirmedAt|date('d M Y H:i') : '—' }}</p>
+
+        <table>
+            <tr><th>Voter number</th><td>{{ voter.voterNumber }}</td></tr>
+            <tr><th>Confirmation code</th><td>{{ voter.confirmationCode }}</td></tr>
+            <tr><th>National ID</th><td>{{ voter.nationalId }}</td></tr>
+            <tr><th>Date of birth</th><td>{{ voter.dateOfBirth|date('d M Y') }} (age {{ voter.age }})</td></tr>
+            <tr><th>Gender</th><td>{{ voter.gender }}</td></tr>
+            <tr><th>Email</th><td>{{ voter.email ?? '—' }}</td></tr>
+            <tr><th>Phone</th><td>{{ voter.phone ?? '—' }}</td></tr>
+            <tr><th>Address</th><td>{{ voter.address ?? '—' }}{% if voter.city %}, {{ voter.city }}{% endif %}{% if voter.region %}, {{ voter.region }}{% endif %}</td></tr>
+        </table>
+
+        <div class="form-actions">
+            {% if voter.status.value != 'confirmed' %}
+                <a class="btn green small" href="{{ path('admin_voter_set_status', {id: voter.id, status: 'confirmed'}) }}">Confirm voter</a>
+            {% endif %}
+            {% if voter.status.value != 'rejected' %}
+                <a class="btn danger small" href="{{ path('admin_voter_set_status', {id: voter.id, status: 'rejected'}) }}">Reject</a>
+            {% endif %}
+            {% if voter.status.value != 'deactivated' %}
+                <a class="btn secondary small" href="{{ path('admin_voter_set_status', {id: voter.id, status: 'deactivated'}) }}">Deactivate</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <section class="col">
+            <div class="panel">
+                <h3>Assign district</h3>
+                <form method="post" action="{{ path('admin_voter_set_district', {id: voter.id}) }}">
+                    <select name="district_id">
+                        <option value="">Nationwide</option>
+                        {% for district in districts ?? [] %}<option value="{{ district.id }}">{{ district.name }}</option>{% endfor %}
+                    </select>
+                    <div class="form-actions"><button type="submit" class="btn small">Save district</button></div>
+                </form>
+            </div>
+        </section>
+        <section class="col">
+            <div class="panel">
+                <h3>Electoral history</h3>
+                <table>
+                    <thead><tr><th>Election</th><th>Status</th><th>Receipt</th><th>Receipt no.</th></tr></thead>
+                    <tbody>
+                    {% for reg in registrations %}
+                        <tr>
+                            <td><a href="{{ path('admin_election_show', {id: reg.election.id}) }}">{{ reg.election.name }}</a></td>
+                            <td><span class="badge {{ reg.status.value in ['eligible','voted'] ? 'green' : 'muted' }}">{{ reg.status.label }}</span></td>
+                            <td>{% if reg.receiptNumber %}<a class="btn secondary small" href="{{ path('app_profile_receipt', {id: reg.id}) }}">View</a>{% endif %}</td>
+                            <td class="small">{{ reg.receiptNumber ?? '—' }}</td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="4" class="muted">No election registrations.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+{% endblock %}

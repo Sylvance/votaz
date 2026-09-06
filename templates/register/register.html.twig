@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register to vote · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col">
+            <div class="panel">
+                <h2>Register as a voter</h2>
+                <p class="muted small">Registering takes about two minutes. After you submit, a 6-digit confirmation code will be emailed to you. Enter it on the next screen to confirm your registration and create a password.</p>
+
+                {% for error in errors %}
+                    <div class="flash error">{{ error }}</div>
+                {% endfor %}
+
+                {{ form_start(form, {attr: {novalidate: 'novalidate'}}) }}
+                    {{ form_row(form.nationalId, {label: 'National ID number'}) }}
+                    <div class="row">
+                        <div class="col">{{ form_row(form.firstName, {label: 'First name'}) }}</div>
+                        <div class="col">{{ form_row(form.lastName, {label: 'Last name'}) }}</div>
+                    </div>
+                    {{ form_row(form.middleName, {label: 'Middle name'}) }}
+                    {{ form_row(form.gender, {label: 'Gender'}) }}
+                    {{ form_row(form.dateOfBirth, {label: 'Date of birth'}) }}
+                    {{ form_row(form.email, {label: 'Email address'}) }}
+                    {{ form_row(form.phone, {label: 'Phone number'}) }}
+                    {{ form_row(form.address, {label: 'Residential address'}) }}
+                    <div class="row">
+                        <div class="col">{{ form_row(form.city, {label: 'City'}) }}</div>
+                        <div class="col">{{ form_row(form.region, {label: 'Region / State'}) }}</div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn">Submit registration</button>
+                    </div>
+                    {{ form_end(form) }}
+            </div>
+        </div>
+        <aside class="col">
+            <div class="panel">
+                <h3>What happens next?</h3>
+                <ol class="small">
+                    <li>We check your details and assign you a voter number.</li>
+                    <li>We email a one-time confirmation code.</li>
+                    <li>After confirming, you receive a permanent confirmation code (your receipt).</li>
+                    <li>You can then register for each open election and vote on polling day.</li>
+                </ol>
+                <p class="small muted">We only verify identity by your national ID, email address and date of birth. Your personal data is protected by law.</p>
+            </div>
+        </aside>
+    </div>
+{% endblock %}
