@@ -20,7 +20,7 @@ class ForumController extends AbstractController
     public function index(ThreadRepository $threadRepository, Request $request): Response
     {
         $category = $request->query->get('category');
-        $category = $category !== null && '' !== $category ? ThreadCategory::tryFrom($category) : null;
+        $category = null !== $category && '' !== $category ? ThreadCategory::tryFrom($category) : null;
 
         return $this->render('forum/index.html.twig', [
             'threads' => $threadRepository->findLatest($category),

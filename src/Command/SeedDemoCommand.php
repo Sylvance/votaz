@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\AgentAssignment;
 use App\Entity\Candidate;
 use App\Entity\District;
 use App\Entity\Election;
@@ -18,11 +19,10 @@ use App\Entity\Enum\VoterStatus;
 use App\Entity\Manifesto;
 use App\Entity\ManifestoSection;
 use App\Entity\PartyAgent;
-use App\Entity\AgentAssignment;
+use App\Entity\PoliticalParty;
 use App\Entity\Poll;
 use App\Entity\PollOption;
 use App\Entity\PollQuestion;
-use App\Entity\PoliticalParty;
 use App\Entity\RoundTable;
 use App\Entity\Thread;
 use App\Entity\Voter;

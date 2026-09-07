@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}{{ poll.title }} · {{ institution_name }}{% endblock %}
+{% block og_description %}{{ poll.title }} — {{ poll.isSurvey ? 'Survey' : 'Poll' }} on {{ institution_name }}{% if poll.isOpen %}; open {% if poll.endsAt %}until {{ poll.endsAt|date('d M Y') }}{% endif %}{% else %}; closed{% endif %}.{% endblock %}
 
 {% block body %}
     <div class="panel" style="max-width:680px;margin:0 auto;">

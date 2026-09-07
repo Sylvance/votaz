@@ -10,9 +10,9 @@ use Doctrine\ORM\EntityManagerInterface;
 final class CsvImportService
 {
     /**
-     * @throws \InvalidArgumentException on malformed rows
-     *
      * @return array{imported: int, skipped: int, errors: list<string>}
+     *
+     * @throws \InvalidArgumentException on malformed rows
      */
     public function importVoters(string $csvContent, ?District $defaultDistrict): array
     {

@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}{{ party.name }} · {{ institution_name }}{% endblock %}
+{% block og_description %}{{ party.name }} ({{ party.abbreviation }}) — {% if party.motto %}“{{ party.motto }}”{% else %}Party profile on {{ institution_name }}{% endif %}.{% endblock %}
 
 {% block body %}
     <div class="panel">

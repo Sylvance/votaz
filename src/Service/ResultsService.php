@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use App\Entity\Election;
-use App\Entity\Enum\CandidateStatus;
 use App\Entity\Vote;
 use Doctrine\ORM\EntityManagerInterface;
 

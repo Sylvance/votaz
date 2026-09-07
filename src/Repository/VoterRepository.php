@@ -38,7 +38,7 @@ class VoterRepository extends ServiceEntityRepository
             ->where('v.username = :username')
             ->setParameter('username', $username);
 
-        if ($email !== null && $email !== '') {
+        if (null !== $email && '' !== $email) {
             $qb->orWhere('v.email = :email')
                 ->setParameter('email', $email);
         }
@@ -55,7 +55,7 @@ class VoterRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('v');
 
-        if ($term !== null && '' !== $term) {
+        if (null !== $term && '' !== $term) {
             $qb->andWhere(
                 $qb->expr()->orX(
                     'v.firstName LIKE :term',

@@ -2,7 +2,6 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\District;
 use App\Entity\Enum\VoterStatus;
 use App\Entity\Voter;
 use App\Form\VoterSearchType;
@@ -14,7 +13,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/admin/voters', name: 'admin_voter_')]
 class VoterController extends AbstractController
@@ -34,7 +32,7 @@ class VoterController extends AbstractController
             $data = $form->getData();
             $term = $data['term'] ?? null;
             $statusStr = $data['status'] ?? null;
-            $status = $statusStr !== null ? VoterStatus::from($statusStr) : null;
+            $status = null !== $statusStr ? VoterStatus::from($statusStr) : null;
         }
 
         $voters = $voterRepository->search($term, $status, ['createdAt' => 'DESC'], 200);

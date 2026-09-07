@@ -297,7 +297,7 @@ class Election
         return array_values(
             array_filter(
                 $this->candidates->toArray(),
-                static fn (Candidate $candidate): bool => \App\Entity\Enum\CandidateStatus::APPROVED === $candidate->getStatus(),
+                static fn (Candidate $candidate): bool => Enum\CandidateStatus::APPROVED === $candidate->getStatus(),
             )
         );
     }

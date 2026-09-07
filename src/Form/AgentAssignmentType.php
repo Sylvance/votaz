@@ -3,9 +3,9 @@
 namespace App\Form;
 
 use App\Entity\AgentAssignment;
+use App\Entity\District;
 use App\Entity\Election;
 use App\Entity\PartyAgent;
-use App\Entity\District;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;

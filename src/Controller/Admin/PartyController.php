@@ -2,9 +2,9 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Enum\PartyStatus;
 use App\Entity\Manifesto;
 use App\Entity\PoliticalParty;
-use App\Entity\Enum\PartyStatus;
 use App\Form\ManifestoType;
 use App\Form\PartyType;
 use App\Service\CodeGenerator;

@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ institution_name }}{% endblock %}</title>
+    <meta property="og:site_name" content="{{ institution_name }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ app.request.uri }}">
+    <meta property="og:title" content="{% block og_title %}{{ block('title') }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ institution_name }}{% endblock %}">
+    <meta property="og:locale" content="en_US">
+    <meta name="twitter:card" content="summary">
+    {% block head_extra %}{% endblock %}
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>

@@ -4,13 +4,12 @@ namespace App\Controller\Admin;
 
 use App\Entity\Election;
 use App\Entity\ElectionRegistration;
-use App\Entity\Enum\CandidateStatus;
 use App\Entity\Enum\ElectionStatus;
 use App\Entity\Enum\RegistrationStatus;
 use App\Form\ElectionTypeForm;
 use App\Repository\CandidateRepository;
-use App\Repository\ElectionRepository;
 use App\Repository\ElectionRegistrationRepository;
+use App\Repository\ElectionRepository;
 use App\Service\ResultsService;
 use App\Service\VoterRegistrationService;
 use Doctrine\ORM\EntityManagerInterface;

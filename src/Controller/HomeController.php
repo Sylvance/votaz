@@ -2,10 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Election;
 use App\Entity\Enum\ElectionStatus;
 use App\Entity\Poll;
-use App\Entity\RoundTable;
 use App\Repository\ElectionRepository;
 use App\Repository\PoliticalPartyRepository;
 use App\Repository\PollRepository;

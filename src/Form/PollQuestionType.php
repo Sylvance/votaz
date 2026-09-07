@@ -3,7 +3,6 @@
 namespace App\Form;
 
 use App\Entity\Enum\QuestionType;
-use App\Entity\PollOption;
 use App\Entity\PollQuestion;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;

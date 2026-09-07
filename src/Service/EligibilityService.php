@@ -27,7 +27,7 @@ final readonly class EligibilityService
         // District constraint: partial/elections scoped to a district only allow
         // voters within that district.
         if (null !== $election->getDistrict()) {
-            if ($voter->getDistrict() === null) {
+            if (null === $voter->getDistrict()) {
                 return false;
             }
             if ($voter->getDistrict()->getId() !== $election->getDistrict()->getId()) {
@@ -51,7 +51,7 @@ final readonly class EligibilityService
         }
 
         if (null !== $election->getDistrict()) {
-            if ($voter->getDistrict() === null) {
+            if (null === $voter->getDistrict()) {
                 $reasons[] = 'This election is restricted to specific districts and your voter record has no district assigned.';
             } elseif ($voter->getDistrict()->getId() !== $election->getDistrict()->getId()) {
                 $reasons[] = sprintf('This election is restricted to the %s district.', $election->getDistrict()->getName());

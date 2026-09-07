@@ -2,8 +2,8 @@
 
 namespace App\Repository;
 
-use App\Entity\Vote;
 use App\Entity\Election;
+use App\Entity\Vote;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

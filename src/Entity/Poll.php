@@ -238,6 +238,6 @@ class Poll
             }
         }
 
-        return $this->publishedAt !== null && new \DateTimeImmutable() > $this->publishedAt;
+        return null !== $this->publishedAt && new \DateTimeImmutable() > $this->publishedAt;
     }
 }

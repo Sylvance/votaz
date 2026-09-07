@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}{{ election.name }} · {{ institution_name }}{% endblock %}
+{% block og_description %}{{ election.name }} — {{ election.type.label }} ({{ election.status.label }}){% if election.district %} · {{ election.district.name }}{% endif %}. Register to vote and follow the result.{% endblock %}
 
 {% block body %}
     <div class="panel">

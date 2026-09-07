@@ -5,7 +5,6 @@ namespace App\Form;
 use App\Entity\Election;
 use App\Entity\Enum\ElectionStatus;
 use App\Entity\Enum\ElectionType;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;

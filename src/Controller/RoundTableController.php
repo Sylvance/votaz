@@ -2,11 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Enum\ThreadCategory;
 use App\Entity\RoundTable;
 use App\Entity\RoundTableRegistration;
-use App\Entity\Voter;
 use App\Entity\Thread;
-use App\Entity\Enum\ThreadCategory;
+use App\Entity\Voter;
 use App\Repository\RoundTableRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -73,7 +73,7 @@ class RoundTableController extends AbstractController
 
         $existing = $roundTable->getThreads()->first();
 
-        if (!($existing instanceof Thread)) {
+        if (!$existing instanceof Thread) {
             $thread = new Thread();
             $thread->setCategory(ThreadCategory::ROUND_TABLE);
             $thread->setTitle('Discussion: '.$roundTable->getTitle());
