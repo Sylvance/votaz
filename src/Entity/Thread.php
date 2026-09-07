@@ -41,7 +41,7 @@ class Thread
     #[ORM\ManyToOne(targetEntity: PoliticalParty::class)]
     private ?PoliticalParty $party = null;
 
-    #[ORM\ManyToOne(targetEntity: RoundTable::class)]
+    #[ORM\ManyToOne(targetEntity: RoundTable::class, inversedBy: 'threads')]
     private ?RoundTable $roundTable = null;
 
     #[ORM\Column]

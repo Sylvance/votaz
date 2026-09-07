@@ -34,7 +34,7 @@
                 </table>
 
                 {% if app.user %}
-                    {% set reg = app.user.electionRegistrations|filter(r => r.election.id == election.id)|first ?? null %}
+                    {% set reg = app.user.electionRegistrations|filter(r => r.election.id == election.id)|first|default(null) %}
                     {% if reg is not null %}
                         <p class="mt"><span class="badge {{ reg.status.value == 'eligible' ? 'green' : (reg.status.value == 'voted' ? 'green' : 'muted') }}">{{ reg.status.label }}</span>
                             <span class="muted small">Receipt: {{ reg.receiptNumber }}</span></p>

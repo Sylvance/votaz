@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Party agents · Admin · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <h1>Party agents</h1>
+        <a class="btn" href="{{ path('admin_agent_new') }}">Register agent</a>
+    </div>
+
+    <div class="panel mt">
+        <table>
+            <thead><tr><th>Agent</th><th>Party</th><th>Agent code</th><th>Active assignments</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+            {% for agent in agents %}
+                <tr>
+                    <td>
+                        <strong>{{ agent.fullName }}</strong>
+                        <div class="small muted">{{ agent.email }}</div>
+                    </td>
+                    <td>{{ agent.party.name }} <span class="badge muted">{{ agent.party.abbreviation }}</span></td>
+                    <td><code>{{ agent.agentCode }}</code></td>
+                    <td>{{ agent.assignments|filter(a => a.status.value == 'active')|length }}</td>
+                    <td>
+                        <span class="badge {{ agent.status.value == 'active' ? 'green' : (agent.status.value == 'suspended' ? 'red' : 'amber') }}">
+                            {{ agent.status.label }}
+                        </span>
+                        {% if not agent.enabled %}<span class="badge muted">login disabled</span>{% endif %}
+                    </td>
+                    <td>
+                        <a class="btn secondary small" href="{{ path('admin_agent_show', {id: agent.id}) }}">Open</a>
+                        <a class="btn small" href="{{ path('admin_agent_assign', {id: agent.id}) }}">Assign</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="6" class="muted">No party agents registered yet.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

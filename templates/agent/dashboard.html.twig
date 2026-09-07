@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Agent console · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <h1>Agent console</h1>
+        <div>
+            <span class="badge muted">{{ agent.party.name }}</span>
+            <code style="margin-left:.5rem">{{ agent.agentCode }}</code>
+        </div>
+    </div>
+
+    <div class="panel mt">
+        <h2>Polls assigned to you</h2>
+        <table>
+            <thead><tr><th>Election</th><th>Scope</th><th>Assigned</th><th>Status</th><th>Reports</th><th>Actions</th></tr></thead>
+            <tbody>
+            {% for assignment in activeAssignments %}
+                <tr>
+                    <td><strong>{{ assignment.election.name }}</strong><div class="small muted">{{ assignment.election.votingStartAt|date('d M Y H:i') }} – {{ assignment.election.votingEndAt|date('d M Y H:i') }}</div></td>
+                    <td class="small">{{ assignment.district ? assignment.district.name : 'All districts' }}{{ assignment.pollingStation ? (' · ' ~ assignment.pollingStation) : '' }}</td>
+                    <td class="small">{{ assignment.assignedAt|date('d M Y') }}</td>
+                    <td><span class="badge green">Active</span></td>
+                    <td><span class="badge muted">{{ assignment.reports|length }}</span></td>
+                    <td>
+                        <a class="btn small" href="{{ path('app_agent_assignment_show', {id: assignment.id}) }}">Open</a>
+                        {% if assignment.reports|length == 0 %}
+                            <a class="btn green small" href="{{ path('app_agent_assignment_report', {id: assignment.id}) }}">Submit report</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="6" class="muted">No active assignments. The commission will assign you to a poll before voting day.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if pastAssignments|length > 0 %}
+        <div class="panel">
+            <h2>Completed assignments</h2>
+            <table>
+                <thead><tr><th>Election</th><th>Scope</th><th>Reports</th><th>Actions</th></tr></thead>
+                <tbody>
+                {% for assignment in pastAssignments %}
+                    <tr>
+                        <td>{{ assignment.election.name }}</td>
+                        <td class="small">{{ assignment.district ? assignment.district.name : 'All districts' }}{{ assignment.pollingStation ? (' · ' ~ assignment.pollingStation) : '' }}</td>
+                        <td><span class="badge muted">{{ assignment.reports|length }}</span></td>
+                        <td><a class="btn secondary small" href="{{ path('app_agent_assignment_show', {id: assignment.id}) }}">View</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    <p class="small muted mt"><a href="{{ path('app_agent_logout') }}">Sign out</a></p>
+{% endblock %}

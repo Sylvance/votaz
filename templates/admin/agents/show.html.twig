@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ agent.fullName }} · Admin{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('admin_agent_index') }}">← All agents</a></p>
+
+    <div class="panel">
+        <h1>{{ agent.fullName }} <span class="badge muted">{{ agent.party.abbreviation }}</span></h1>
+        <p><span class="badge {{ agent.status.value == 'active' ? 'green' : (agent.status.value == 'suspended' ? 'red' : 'amber') }}">{{ agent.status.label }}</span>
+            {% if not agent.enabled %}<span class="badge muted">login disabled</span>{% endif %}</p>
+        <table>
+            <tr><th>Party</th><td>{{ agent.party.name }}</td></tr>
+            <tr><th>Agent code</th><td><code>{{ agent.agentCode }}</code></td></tr>
+            <tr><th>Email (login)</th><td>{{ agent.email }}</td></tr>
+            <tr><th>Phone</th><td>{{ agent.phone ?: '—' }}</td></tr>
+            <tr><th>Credentials / badge</th><td>{{ agent.credentials ?: '—' }}</td></tr>
+            <tr><th>Registered on</th><td>{{ agent.createdAt|date('d M Y') }}</td></tr>
+        </table>
+        <div class="form-actions">
+            <a class="btn secondary small" href="{{ path('admin_agent_edit', {id: agent.id}) }}">Edit</a>
+            <a class="btn small" href="{{ path('admin_agent_assign', {id: agent.id}) }}">Assign to poll</a>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Assignments
+            {% if assignments|length > 0 %}
+                <a class="btn small" style="float:right" href="{{ path('admin_agent_assign', {id: agent.id}) }}">+ Assign to poll</a>
+            {% endif %}
+        </h2>
+        <table>
+            <thead><tr><th>Election</th><th>Scope</th><th>Assigned</th><th>Reports</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+            {% for assignment in assignments %}
+                <tr>
+                    <td>{{ assignment.election.name }}</td>
+                    <td class="small">{{ assignment.district ? assignment.district.name : 'All districts' }}{{ assignment.pollingStation ? (' · ' ~ assignment.pollingStation) : '' }}</td>
+                    <td class="small">{{ assignment.assignedAt|date('d M Y') }} by {{ assignment.assignedBy }}</td>
+                    <td><span class="badge muted">{{ assignment.reports|length }}</span></td>
+                    <td><span class="badge {{ assignment.status.value == 'active' ? 'green' : (assignment.status.value == 'cancelled' ? 'red' : 'amber') }}">{{ assignment.status.label }}</span></td>
+                    <td><a class="btn secondary small" href="{{ path('admin_assignment_show', {id: assignment.id}) }}">Open</a></td>
+                </tr>
+            {% else %}
+                <tr><td colspan="6" class="muted">No assignments yet. <a href="{{ path('admin_agent_assign', {id: agent.id}) }}">Assign this agent</a> to an election poll.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

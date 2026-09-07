@@ -10,6 +10,7 @@
         <div class="stat"><div class="num">{{ counts.confirmedVoters }}</div><div class="lab">Confirmed voters</div></div>
         <div class="stat"><div class="num">{{ counts.elections }}</div><div class="lab">Elections</div></div>
         <div class="stat"><div class="num">{{ counts.parties }}</div><div class="lab">Parties</div></div>
+        <div class="stat"><div class="num">{{ counts.agents }}</div><div class="lab">Party agents</div></div>
     </div>
 
     <div class="row">
@@ -18,6 +19,8 @@
             <p><a class="btn small" href="{{ path('admin_voter_index') }}">Voters</a></p>
             <p><a class="btn small" href="{{ path('admin_election_index') }}">Elections</a></p>
             <p><a class="btn small" href="{{ path('admin_party_index') }}">Parties</a></p>
+            <p><a class="btn small" href="{{ path('admin_agent_index') }}">Party agents</a></p>
+            <p><a class="btn small" href="{{ path('admin_report_index') }}">Observation reports</a></p>
             <p><a class="btn small" href="{{ path('admin_poll_index') }}">Polls &amp; surveys</a></p>
             <p><a class="btn small" href="{{ path('admin_roundtable_index') }}">Round tables</a></p>
         </nav>
@@ -32,6 +35,15 @@
                     <p class="muted">No elections configured yet.</p>
                 {% endfor %}
             </div>
+            {% if recentIrregularities|length > 0 %}
+                <div class="panel">
+                    <h3>Recently flagged irregularities</h3>
+                    {% for report in recentIrregularities %}
+                        <p><a href="{{ path('admin_report_show', {id: report.id}) }}">{{ report.assignment.agent.party.name }} — {{ report.assignment.election.name }}</a>
+                            <span class="badge red">{{ report.submittedAt|date('d M H:i') }}</span></p>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </section>
     </div>
 {% endblock %}

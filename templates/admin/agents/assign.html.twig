@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Assign {{ agent.fullName }} · Admin{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('admin_agent_show', {id: agent.id}) }}">← {{ agent.fullName }}</a></p>
+    <div class="panel" style="max-width:640px;margin:0 auto;">
+        <h2>Assign {{ agent.fullName }} <span class="badge muted">{{ agent.party.abbreviation }}</span></h2>
+        {{ form_start(form) }}
+            {{ form_row(form.election) }}
+            <div class="row">
+                <div class="col">{{ form_row(form.district) }}</div>
+                <div class="col">{{ form_row(form.pollingStation) }}</div>
+            </div>
+            {{ form_row(form.assignedAt) }}
+            {{ form_row(form.notes) }}
+            <div class="form-actions">
+                <button type="submit" class="btn">Assign agent</button>
+                <a class="btn secondary" href="{{ path('admin_agent_show', {id: agent.id}) }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

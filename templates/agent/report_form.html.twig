@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Submit report · Agent console{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('app_agent_assignment_show', {id: assignment.id}) }}">← Back to assignment</a></p>
+
+    <div class="panel" style="max-width:720px;margin:0 auto;">
+        <h1>Submit observation report</h1>
+        <p><strong>{{ assignment.election.name }}</strong> · <span class="muted">{{ assignment.district ? assignment.district.name : 'All districts' }}{{ assignment.pollingStation ? (' · ' ~ assignment.pollingStation) : '' }}</span></p>
+
+        {{ form_start(form) }}
+            {{ form_row(form.description) }}
+            <div class="row">
+                <div class="col">{{ form_row(form.votingStartObserved) }}</div>
+                <div class="col">{{ form_row(form.votingEndObserved) }}</div>
+            </div>
+            {{ form_row(form.irregularities) }}
+            {{ form_row(form.irregularityDetails) }}
+            <div class="row">
+                <div class="col">{{ form_row(form.estimatedTurnout) }}</div>
+                <div class="col">{{ form_row(form.photos) }}</div>
+            </div>
+            {{ form_row(form.notes) }}
+
+            <h3>Observed party tallies</h3>
+            <p class="small muted">Leave the count at 0 for parties you don't want to report on. Remove a row or add extra parties using the button below.</p>
+            <div {{ form.results.vars.id }}_list data-prototype="{{ form_row(form.results.vars.prototype)|e('html_attr') }}">
+                {% for row in form.results %}
+                    <div style="display:grid;grid-template-columns:1fr 120px auto;gap:.5rem;align-items:end;margin-bottom:.5rem;">
+                        {{ form_row(row.party, {'label': false}) }}
+                        {{ form_row(row.observedVotes, {'label': false}) }}
+                        <button type="button" class="btn secondary small js-remove-row">✕</button>
+                    </div>
+                {% endfor %}
+            </div>
+            <p><button type="button" class="btn secondary small" id="{{ form.results.vars.id }}_add">+ Add party tally</button></p>
+
+            <div class="form-actions">
+                <button type="submit" class="btn green">Submit report</button>
+                <a class="btn secondary" href="{{ path('app_agent_assignment_show', {id: assignment.id}) }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+
+    <script>
+        const irregularities = document.getElementById('{{ form.irregularities.vars.id }}');
+        const detailsField = document.getElementById('{{ form.irregularityDetails.vars.id }}');
+        const toggleDetails = () => {
+            const wrapper = detailsField.closest('.form-group') || detailsField.parentElement;
+            wrapper.style.display = irregularities.checked ? 'block' : 'none';
+        };
+        irregularities.addEventListener('change', toggleDetails);
+        toggleDetails();
+
+        const resultsContainer = document.getElementById('{{ form.results.vars.id }}_list');
+        const addBtn = document.getElementById('{{ form.results.vars.id }}_add');
+        addBtn.addEventListener('click', () => {
+            const proto = resultsContainer.dataset.prototype;
+            const index = resultsContainer.querySelectorAll('[style*="grid-template-columns"]').length;
+            const html = proto.replace(/__name__/g, index);
+            const wrapper = document.createElement('div');
+            wrapper.style.cssText = 'display:grid;grid-template-columns:1fr 120px auto;gap:.5rem;align-items:end;margin-bottom:.5rem;';
+            wrapper.innerHTML = html + '<button type="button" class="btn secondary small js-remove-row">✕</button>';
+            resultsContainer.appendChild(wrapper);
+        });
+        resultsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('js-remove-row')) {
+                e.target.closest('[style*="grid-template-columns"]').remove();
+            }
+        });
+    </script>
+{% endblock %}

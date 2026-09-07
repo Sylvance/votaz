@@ -5,9 +5,11 @@ namespace App\Command;
 use App\Entity\Candidate;
 use App\Entity\District;
 use App\Entity\Election;
+use App\Entity\Enum\AssignmentStatus;
 use App\Entity\Enum\CandidateStatus;
 use App\Entity\Enum\ElectionStatus;
 use App\Entity\Enum\ElectionType;
+use App\Entity\Enum\PartyAgentStatus;
 use App\Entity\Enum\PartyStatus;
 use App\Entity\Enum\QuestionType;
 use App\Entity\Enum\RoundTableStatus;
@@ -15,6 +17,8 @@ use App\Entity\Enum\ThreadCategory;
 use App\Entity\Enum\VoterStatus;
 use App\Entity\Manifesto;
 use App\Entity\ManifestoSection;
+use App\Entity\PartyAgent;
+use App\Entity\AgentAssignment;
 use App\Entity\Poll;
 use App\Entity\PollOption;
 use App\Entity\PollQuestion;
@@ -30,6 +34,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[AsCommand(
     name: 'app:seed-demo',
@@ -40,6 +45,7 @@ class SeedDemoCommand extends Command
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly VoterRegistrationService $registrationService,
+        private readonly UserPasswordHasherInterface $passwordHasher,
     ) {
         parent::__construct();
     }
@@ -87,6 +93,11 @@ class SeedDemoCommand extends Command
         if (0 === $this->em->getRepository(Thread::class)->count([])) {
             $this->seedForum();
             $io->note('Created forum discussions.');
+        }
+
+        if (0 === $this->em->getRepository(PartyAgent::class)->count([])) {
+            $this->seedAgents($parties, $elections);
+            $io->note('Created party agents and poll assignments.');
         }
 
         $io->success('Demo data seeded.');
@@ -446,6 +457,48 @@ class SeedDemoCommand extends Command
                 $this->em->persist($post);
             }
         }
+        $this->em->flush();
+    }
+
+    /**
+     * @param PoliticalParty[] $parties
+     * @param Election[]       $elections
+     */
+    private function seedAgents(array $parties, array $elections): void
+    {
+        $names = [
+            ['Zainab', 'Ibrahim', 'zainab.ibrahim@example.org'],
+            ['Samuel', 'Cole', 'samuel.cole@example.org'],
+            ['Ruth', 'Awuni', 'ruth.awuni@example.org'],
+            ['Emeka', 'Nwosu', 'emeka.nwosu@example.org'],
+        ];
+
+        foreach ($names as $i => [$first, $last, $email]) {
+            $agent = new PartyAgent();
+            $agent->setFirstName($first);
+            $agent->setLastName($last);
+            $agent->setEmail($email);
+            $agent->setPhone(sprintf('+1555127%04d', $i + 200));
+            $agent->setParty($parties[$i % count($parties)]);
+            $agent->setAgentCode(CodeGenerator::agentCode());
+            $agent->setCredentials('Party accreditation badge #'.($i + 1));
+            $agent->setPassword($this->passwordHasher->hashPassword($agent, 'AgentPass123!'));
+            $agent->setStatus(PartyAgentStatus::ACTIVE);
+            $agent->setEnabled(true);
+            $this->em->persist($agent);
+
+            if (isset($elections[0])) {
+                $assignment = new AgentAssignment();
+                $assignment->setAgent($agent);
+                $assignment->setElection($elections[0]);
+                $assignment->setDistrict($elections[0]->getDistrict());
+                $assignment->setPollingStation('Central Hall, Unit '.($i + 1));
+                $assignment->setAssignedBy('Electoral Commission Secretariat');
+                $assignment->setStatus(AssignmentStatus::ACTIVE);
+                $this->em->persist($assignment);
+            }
+        }
+
         $this->em->flush();
     }
 }

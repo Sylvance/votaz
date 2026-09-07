@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Agent sign in · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div class="panel" style="max-width:460px;margin:0 auto;">
+        <h2>Party agent sign in</h2>
+        <p class="muted small">This console is for party agents appointed by a political party to observe a poll. Use the login email and password issued to you by the commission.</p>
+
+        {% if error %}
+            <div class="flash error">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        <form method="post" action="{{ path('app_agent_login') }}">
+            <label class="small">Email address</label>
+            <input type="text" name="_username" value="{{ last_username }}" autocomplete="username" required autofocus style="width:100%;padding:.6rem .75rem;border:1px solid #cbd5e1;border-radius:8px;margin-bottom:.75rem;">
+
+            <label class="small">Password</label>
+            <input type="password" name="_password" autocomplete="current-password" required style="width:100%;padding:.6rem .75rem;border:1px solid #cbd5e1;border-radius:8px;margin-bottom:.75rem;">
+
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <div class="form-actions">
+                <button type="submit" class="btn">Sign in</button>
+            </div>
+        </form>
+        <p class="mt small muted"><a href="{{ path('app_home') }}">← Back to the public site</a></p>
+    </div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Assignment · Agent console{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('app_agent_dashboard') }}">← My assignments</a></p>
+
+    <div class="panel">
+        <h1>{{ assignment.election.name }}</h1>
+        <p><span class="badge {{ assignment.status.value == 'active' ? 'green' : (assignment.status.value == 'cancelled' ? 'red' : 'amber') }}">{{ assignment.status.label }}</span></p>
+        <table>
+            <tr><th>Voting period</th><td>{{ assignment.election.votingStartAt|date('d M Y H:i') }} – {{ assignment.election.votingEndAt|date('d M Y H:i') }}</td></tr>
+            <tr><th>Your scope</th><td>{{ assignment.district ? assignment.district.name : 'All districts' }}{{ assignment.pollingStation ? (' · ' ~ assignment.pollingStation) : '' }}</td></tr>
+            <tr><th>Assigned</th><td>{{ assignment.assignedAt|date('d M Y') }} by {{ assignment.assignedBy }}</td></tr>
+        </table>
+        {% if assignment.notes %}
+            <p class="small muted">Instructions: {{ assignment.notes }}</p>
+        {% endif %}
+    </div>
+
+    <div class="panel">
+        <h2>Your reports</h2>
+        <table>
+            <thead><tr><th>Submitted</th><th>Summary</th><th>Irregularities</th><th>Photos</th></tr></thead>
+            <tbody>
+            {% for report in reports %}
+                <tr>
+                    <td class="small">{{ report.submittedAt|date('d M Y H:i') }}</td>
+                    <td>{{ report.description|slice(0, 90) }}{% if report.description|length > 90 %}…{% endif %}</td>
+                    <td>{% if report.irregularities %}<span class="badge red">Yes</span>{% else %}<span class="badge green">No</span>{% endif %}</td>
+                    <td><span class="badge muted">{{ report.photos|length }}</span></td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4" class="muted">No reports submitted yet.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if assignment.status.value == 'active' %}
+        <div class="panel">
+            <h2>Submit a report</h2>
+            {% if reports|length == 0 %}
+                <p>Use the reporting form to record what is happening at your assigned poll. You can attach up to five photos as evidence.</p>
+                <p><a class="btn green" href="{{ path('app_agent_assignment_report', {id: assignment.id}) }}">Submit observation report</a></p>
+            {% else %}
+                <p class="small muted">You already submitted a report for this assignment. If you need to add further observations, contact the commission.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

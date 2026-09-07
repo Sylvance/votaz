@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ agent.fullName ?: 'New agent' }} · Admin{% endblock %}
+
+{% block body %}
+    <div class="panel" style="max-width:640px;margin:0 auto;">
+        <h2>{{ agent.id ? 'Edit agent — '.agent.fullName : 'Register a new party agent' }}</h2>
+        {{ form_start(form) }}
+            <div class="row">
+                <div class="col">{{ form_row(form.firstName) }}</div>
+                <div class="col">{{ form_row(form.lastName) }}</div>
+            </div>
+            <div class="row">
+                <div class="col">{{ form_row(form.email) }}</div>
+                <div class="col">{{ form_row(form.phone) }}</div>
+            </div>
+            {{ form_row(form.party) }}
+            <div class="row">
+                <div class="col">{{ form_row(form.agentCode) }}</div>
+                <div class="col">{{ form_row(form.credentials) }}</div>
+            </div>
+            {% if form.password is defined %}
+                <p class="flash info">Send the agent their login email and this initial password; they sign in at <code>/agent/login</code>.</p>
+                {{ form_row(form.password) }}
+            {% endif %}
+            <div class="row">
+                <div class="col">{{ form_row(form.enabled) }}</div>
+                <div class="col">{{ form_row(form.status) }}</div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn">{{ agent.id ? 'Save agent' : 'Register agent' }}</button>
+                <a class="btn secondary" href="{{ path('admin_agent_index') }}">Cancel</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

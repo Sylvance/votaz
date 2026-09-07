@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Report · Admin{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('admin_report_index') }}">← All reports</a></p>
+
+    <div class="panel">
+        <h1>Observation report <span class="badge muted">#{{ report.id }}</span></h1>
+        <table>
+            <tr><th>Agent</th><td>{{ report.assignment.agent.fullName }} (<span class="badge muted">{{ report.assignment.agent.party.abbreviation }}</span>)</td></tr>
+            <tr><th>Election</th><td>{{ report.assignment.election.name }}</td></tr>
+            <tr><th>Scope</th><td>{{ report.assignment.district ? report.assignment.district.name : 'All districts' }}{{ report.assignment.pollingStation ? (' · ' ~ report.assignment.pollingStation) : '' }}</td></tr>
+            <tr><th>Submitted</th><td>{{ report.submittedAt|date('d M Y H:i') }}</td></tr>
+            <tr><th>Opening observed</th><td>{% if report.votingStartObserved %}<span class="badge green">Yes</span>{% else %}<span class="badge amber">No</span>{% endif %}</td></tr>
+            <tr><th>Close observed</th><td>{% if report.votingEndObserved %}<span class="badge green">Yes</span>{% else %}<span class="badge amber">No</span>{% endif %}</td></tr>
+            <tr><th>Irregularities</th><td>{% if report.irregularities %}<span class="badge red">Yes</span>{% else %}<span class="badge green">No</span>{% endif %}</td></tr>
+            <tr><th>Estimated turnout</th><td>{{ report.estimatedTurnout ?: '—' }}</td></tr>
+        </table>
+    </div>
+
+    <div class="panel">
+        <h2>Description</h2>
+        <p>{{ report.description }}</p>
+        {% if report.irregularities and report.irregularityDetails %}
+            <h3>Irregularity details</h3>
+            <p>{{ report.irregularityDetails }}</p>
+        {% endif %}
+        {% if report.notes %}
+            <h3>Notes</h3>
+            <p>{{ report.notes }}</p>
+        {% endif %}
+    </div>
+
+    {% if report.results|length > 0 %}
+        <div class="panel">
+            <h2>Observed party tallies</h2>
+            <table>
+                <thead><tr><th>Party</th><th>Observed votes</th></tr></thead>
+                <tbody>
+                {% for result in report.results|sort((a, b) => b.observedVotes <=> a.observedVotes) %}
+                    <tr>
+                        <td>{{ result.party.name }} <span class="badge muted">{{ result.party.abbreviation }}</span></td>
+                        <td><strong>{{ result.observedVotes }}</strong></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    {% if report.photos|length > 0 %}
+        <div class="panel">
+            <h2>Photo evidence ({{ report.photos|length }})</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;">
+                {% for photo in report.photos %}
+                    <figure style="margin:0">
+                        <a href="{{ photo.path }}" target="_blank"><img src="{{ photo.path }}" alt="{{ photo.caption }}" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;"></a>
+                        <figcaption class="small muted">{{ photo.caption }}</figcaption>
+                    </figure>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <p><a class="btn secondary small" href="{{ path('admin_report_delete', {id: report.id}) }}" onclick="return confirm('Delete this report?')">Delete report</a></p>
+{% endblock %}

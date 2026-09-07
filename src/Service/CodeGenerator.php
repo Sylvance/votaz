@@ -9,7 +9,7 @@ final class CodeGenerator
         return sprintf('VN-%04d-%06d', random_int(0, 9999), random_int(0, 999999));
     }
 
-    public static function receipt(string $prefix = 'REG', string $year = null): string
+    public static function receipt(string $prefix = 'REG', ?string $year = null): string
     {
         return sprintf('%s-%s-%06d', $prefix, $year ?? (new \DateTimeImmutable())->format('Y'), random_int(0, 999999));
     }
@@ -34,5 +34,12 @@ final class CodeGenerator
     public static function partyRegistrationNumber(): string
     {
         return sprintf('PRT-%s-%05d', (new \DateTimeImmutable())->format('Y'), random_int(0, 99999));
+    }
+
+    public static function agentCode(): string
+    {
+        $year = (new \DateTimeImmutable())->format('Y');
+
+        return sprintf('AGT-%s-%06d', $year, random_int(0, 999999));
     }
 }

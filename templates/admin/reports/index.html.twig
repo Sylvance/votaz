@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Observation reports · Admin · {{ institution_name }}{% endblock %}
+
+{% block body %}
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <h1>Observation reports</h1>
+        <a class="btn secondary small" href="{{ path('admin_report_index', {irregular: onlyIrregular ? null : 1}) }}">
+            {{ onlyIrregular ? 'Show all reports' : 'Only irregularities' }}
+        </a>
+    </div>
+
+    <div class="panel mt">
+        <table>
+            <thead><tr><th>Submitted</th><th>Agent</th><th>Party</th><th>Election</th><th>Irregularities</th><th>Photos</th><th>Actions</th></tr></thead>
+            <tbody>
+            {% for report in reports %}
+                <tr>
+                    <td class="small">{{ report.submittedAt|date('d M Y H:i') }}</td>
+                    <td>{{ report.assignment.agent.fullName }}</td>
+                    <td><span class="badge muted">{{ report.assignment.agent.party.abbreviation }}</span></td>
+                    <td class="small">{{ report.assignment.election.name }}</td>
+                    <td>{% if report.irregularities %}<span class="badge red">Yes</span>{% else %}<span class="badge green">No</span>{% endif %}</td>
+                    <td><span class="badge muted">{{ report.photos|length }}</span></td>
+                    <td><a class="btn secondary small" href="{{ path('admin_report_show', {id: report.id}) }}">Open</a></td>
+                </tr>
+            {% else %}
+                <tr><td colspan="7" class="muted">No reports{% if onlyIrregular %} with irregularities{% endif %} yet.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

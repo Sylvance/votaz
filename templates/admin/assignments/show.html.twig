@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Assignment · Admin{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('admin_agent_show', {id: assignment.agent.id}) }}">← {{ assignment.agent.fullName }}</a></p>
+
+    <div class="panel">
+        <h1>{{ assignment.agent.fullName }} <span class="badge muted">{{ assignment.agent.party.abbreviation }}</span></h1>
+        <p><span class="badge {{ assignment.status.value == 'active' ? 'green' : (assignment.status.value == 'cancelled' ? 'red' : 'amber') }}">{{ assignment.status.label }}</span></p>
+        <table>
+            <tr><th>Election</th><td><a href="{{ path('admin_election_show', {id: assignment.election.id}) }}">{{ assignment.election.name }}</a></td></tr>
+            <tr><th>Scope</th><td>{{ assignment.district ? assignment.district.name : 'All districts' }}{{ assignment.pollingStation ? (' · ' ~ assignment.pollingStation) : '' }}</td></tr>
+            <tr><th>Assigned</th><td>{{ assignment.assignedAt|date('d M Y H:i') }} by {{ assignment.assignedBy }}</td></tr>
+            <tr><th>Notes</th><td>{{ assignment.notes ?: '—' }}</td></tr>
+        </table>
+        <div class="form-actions">
+            {% if assignment.status.value != 'active' %}
+                <a class="btn green small" href="{{ path('admin_assignment_status', {id: assignment.id, status: 'active'}) }}">Mark active</a>
+            {% endif %}
+            {% if assignment.status.value != 'completed' %}
+                <a class="btn small" href="{{ path('admin_assignment_status', {id: assignment.id, status: 'completed'}) }}">Mark completed</a>
+            {% endif %}
+            {% if assignment.status.value != 'cancelled' %}
+                <a class="btn secondary small" href="{{ path('admin_assignment_status', {id: assignment.id, status: 'cancelled'}) }}">Cancel assignment</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Observation reports
+            {% if assignment.reports|length > 0 %}
+                <span class="badge muted">{{ assignment.reports|length }}</span>
+            {% endif %}
+        </h2>
+        <table>
+            <thead><tr><th>Submitted</th><th>Summary</th><th>Irregularities</th><th>Photos</th><th>Actions</th></tr></thead>
+            <tbody>
+            {% for report in assignment.reports %}
+                <tr>
+                    <td class="small">{{ report.submittedAt|date('d M Y H:i') }}</td>
+                    <td>{{ report.description|slice(0, 80) }}…</td>
+                    <td>{% if report.irregularities %}<span class="badge red">Yes</span>{% else %}<span class="badge green">No</span>{% endif %}</td>
+                    <td><span class="badge muted">{{ report.photos|length }}</span></td>
+                    <td><a class="btn secondary small" href="{{ path('admin_report_show', {id: report.id}) }}">Open</a></td>
+                </tr>
+            {% else %}
+                <tr><td colspan="5" class="muted">The agent has not submitted a report yet.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

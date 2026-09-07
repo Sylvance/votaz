@@ -5,6 +5,8 @@ namespace App\Controller\Admin;
 use App\Entity\Enum\VoterStatus;
 use App\Repository\ElectionRepository;
 use App\Repository\ElectionRegistrationRepository;
+use App\Repository\ObservationReportRepository;
+use App\Repository\PartyAgentRepository;
 use App\Repository\PoliticalPartyRepository;
 use App\Repository\VoterRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,6 +22,8 @@ class DashboardController extends AbstractController
         VoterRepository $voterRepository,
         ElectionRepository $electionRepository,
         PoliticalPartyRepository $partyRepository,
+        PartyAgentRepository $agentRepository,
+        ObservationReportRepository $reportRepository,
         ElectionRegistrationRepository $registrationRepository,
         EntityManagerInterface $em,
     ): Response {
@@ -42,8 +46,10 @@ class DashboardController extends AbstractController
                 'confirmedVoters' => $voterCounts[VoterStatus::CONFIRMED->value] ?? 0,
                 'elections' => array_sum(array_values($electionRepository->countByStatus())),
                 'parties' => array_sum(array_values($partyRepository->countByStatus())),
+                'agents' => array_sum(array_values($agentRepository->countByStatus())),
             ],
             'electionRegistrationCounts' => $electionRegistrationCounts,
+            'recentIrregularities' => $reportRepository->findRecentWithIrregularities(5),
         ]);
     }
 }

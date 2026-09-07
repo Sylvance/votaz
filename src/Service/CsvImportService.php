@@ -21,7 +21,7 @@ final class CsvImportService
         $skipped = 0;
 
         $lines = preg_split('/\r\n|\r|\n/', trim($csvContent)) ?: [];
-        $rows = array_map('str_getcsv', $lines);
+        $rows = array_map(static fn (string $line): array => str_getcsv($line, ',', '"', ''), $lines);
 
         // Drop a header row if the first line looks like a header.
         if ([] !== $rows && isset($rows[0][0]) && !is_numeric($rows[0][0])) {
